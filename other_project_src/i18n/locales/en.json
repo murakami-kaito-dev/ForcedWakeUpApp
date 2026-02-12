@@ -1,0 +1,78 @@
+{
+  "common": {
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading..."
+  },
+  "weekdays": {
+    "short": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "full": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  },
+  "screens": {
+    "home": {
+      "emptyStateTitle": "Add a habit",
+      "emptyStateText": "Tap the + button in the top right\nto add a new habit",
+      "deleteTitle": "Delete",
+      "deleteMessage": "This action cannot be undone.\nAre you sure?",
+      "deleteFailed": "Failed to delete"
+    },
+    "addHabit": {
+      "headerTitle": "Add New Habit",
+      "headerSubtitle": "Set up something you want to do daily",
+      "missionLabel": "Habit to build",
+      "missionPlaceholder": "e.g.) Run for 15 minutes every day",
+      "detailLabel": "Details (optional)",
+      "detailPlaceholder": "e.g.) Go to the gym right after work",
+      "tip1": "Start with specific and small goals",
+      "tip2": "Doing it at the same time every day makes it easier to stick",
+      "addFailed": "Failed to add"
+    },
+    "editHabit": {
+      "habitLabel": "Habit",
+      "habitPlaceholder": "Enter habit name",
+      "achievementLabel": "Achievement Log",
+      "detailLabel": "Details",
+      "detailPlaceholder": "e.g.) Go for a run right after getting home from work",
+      "notificationLabel": "Notifications",
+      "noNotification": "No notifications set",
+      "everyday": "Everyday",
+      "setWeekday": "Please set weekdays",
+      "deleteTitle": "Delete",
+      "deleteMessage": "Are you sure?",
+      "deleteFailed": "Failed to delete",
+      "updateFailed": "Failed to update"
+    },
+    "addAlarm": {
+      "repeatLabel": "Repeat",
+      "saveFailed": "Failed to save"
+    },
+    "editAlarm": {
+      "repeatLabel": "Repeat",
+      "updateFailed": "Failed to update!"
+    },
+    "app": {
+      "testNotificationButton": "Send test notification in 61 seconds",
+      "testNotificationTitle": "Test Notification"
+    }
+  },
+  "notifications": {
+    "defaultTitle": "HabitMaster",
+    "defaultBody": "Let's achieve your habit!"
+  },
+  "components": {
+    "notifyItem": {
+      "title": "Notifications",
+      "repeat": "Repeat"
+    },
+    "habitMissionDetail": {
+      "title": "Details",
+      "placeholder": "e.g.) Go for a run right after getting home from work!"
+    }
+  },
+  "language": {
+    "current": "EN",
+    "switchTo": "JA"
+  }
+}

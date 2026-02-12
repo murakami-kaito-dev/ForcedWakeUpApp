@@ -1,0 +1,78 @@
+{
+  "common": {
+    "back": "戻る",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除する",
+    "loading": "読み込み中..."
+  },
+  "weekdays": {
+    "short": ["日", "月", "火", "水", "木", "金", "土"],
+    "full": ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"]
+  },
+  "screens": {
+    "home": {
+      "emptyStateTitle": "習慣を追加しよう",
+      "emptyStateText": "右上の + ボタンから\n新しい習慣を追加できます",
+      "deleteTitle": "削除します",
+      "deleteMessage": "一度削除した記録は戻せません\nよろしいですか？",
+      "deleteFailed": "削除に失敗しました"
+    },
+    "addHabit": {
+      "headerTitle": "新しい習慣を追加",
+      "headerSubtitle": "毎日続けたいことを設定しましょう",
+      "missionLabel": "習慣化したいこと",
+      "missionPlaceholder": "例）毎日15分ランニング",
+      "detailLabel": "詳細（任意）",
+      "detailPlaceholder": "例）帰宅したらすぐにジムに行く",
+      "tip1": "具体的で小さな目標から始めましょう",
+      "tip2": "毎日同じ時間に行うと続けやすくなります",
+      "addFailed": "追加できませんでした"
+    },
+    "editHabit": {
+      "habitLabel": "習慣",
+      "habitPlaceholder": "習慣名を入力",
+      "achievementLabel": "達成記録",
+      "detailLabel": "詳細",
+      "detailPlaceholder": "例）仕事から帰ってきたらすぐに走りに行く",
+      "notificationLabel": "通知",
+      "noNotification": "通知が設定されていません",
+      "everyday": "毎日",
+      "setWeekday": "曜日を設定してください",
+      "deleteTitle": "削除します",
+      "deleteMessage": "よろしいですか？",
+      "deleteFailed": "削除に失敗しました",
+      "updateFailed": "更新に失敗しました"
+    },
+    "addAlarm": {
+      "repeatLabel": "くり返し",
+      "saveFailed": "保存できませんでした"
+    },
+    "editAlarm": {
+      "repeatLabel": "くり返し",
+      "updateFailed": "更新に失敗しました！"
+    },
+    "app": {
+      "testNotificationButton": "61秒後にプッシュ通知する",
+      "testNotificationTitle": "テスト通知"
+    }
+  },
+  "notifications": {
+    "defaultTitle": "HabitMaster",
+    "defaultBody": "習慣を達成しましょう！"
+  },
+  "components": {
+    "notifyItem": {
+      "title": "通知",
+      "repeat": "くり返し"
+    },
+    "habitMissionDetail": {
+      "title": "詳細",
+      "placeholder": "例)仕事から帰ってきたらすぐに走りに行く！"
+    }
+  },
+  "language": {
+    "current": "JA",
+    "switchTo": "EN"
+  }
+}
