@@ -68,38 +68,90 @@ class _SleepScreenState extends State<SleepScreen> {
     });
   }
 
+  void _showCancelDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF16213E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'アラームを解除しますか？',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        content: const Text(
+          'ホーム画面に戻ります。',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル',
+                style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // close dialog
+              _timer?.cancel();
+              WakelockPlus.disable();
+              Navigator.pushReplacementNamed(this.context, '/');
+            },
+            child: const Text('解除する',
+                style: TextStyle(color: Color(0xFFE94560))),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _countdown,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.15),
-                    fontSize: 48,
-                    fontWeight: FontWeight.w200,
-                    letterSpacing: 4,
+    return Scaffold(
+      backgroundColor: const Color(0xFF1A1A2E),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.nightlight_round,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 48,
                   ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  '充電しておやすみください',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.1),
-                    fontSize: 14,
+                  const SizedBox(height: 24),
+                  Text(
+                    _countdown,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 56,
+                      fontWeight: FontWeight.w200,
+                      letterSpacing: 4,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Text(
+                    '充電しておやすみください',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back,
+                    color: Colors.white.withOpacity(0.5)),
+                onPressed: () => _showCancelDialog(),
+              ),
+            ),
+          ],
         ),
       ),
     );

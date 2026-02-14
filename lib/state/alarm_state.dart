@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/alarm_settings.dart';
-import '../models/exercise_type.dart';
+import '../models/mission_type.dart';
 import '../services/storage_service.dart';
 
 class AlarmState extends ChangeNotifier {
@@ -8,8 +8,8 @@ class AlarmState extends ChangeNotifier {
 
   AlarmSettings _settings;
   bool _isAlarmRinging = false;
-  int _completedReps = 0;
-  static const int targetReps = 10;
+  int _completedCount = 0;
+  DateTime? _alarmTriggeredAt;
 
   AlarmState(this._storageService)
       : _settings = _storageService.loadAlarmSettings() ??
@@ -17,9 +17,12 @@ class AlarmState extends ChangeNotifier {
 
   AlarmSettings get settings => _settings;
   bool get isAlarmRinging => _isAlarmRinging;
-  int get completedReps => _completedReps;
-  int get remainingReps => targetReps - _completedReps;
-  bool get isExerciseComplete => _completedReps >= targetReps;
+  int get completedCount => _completedCount;
+  int get targetCount => _settings.targetCount;
+  int get remainingCount => targetCount - _completedCount;
+  bool get isMissionComplete => _completedCount >= targetCount;
+  MissionType get missionType => _settings.missionType;
+  DateTime? get alarmTriggeredAt => _alarmTriggeredAt;
 
   Future<void> updateAlarmTime(TimeOfDay time) async {
     _settings = _settings.copyWith(alarmTime: time);
@@ -27,8 +30,40 @@ class AlarmState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateExerciseType(ExerciseType type) async {
-    _settings = _settings.copyWith(exerciseType: type);
+  Future<void> updateMissionType(String missionTypeId) async {
+    final mission = MissionType.fromId(missionTypeId);
+    _settings = _settings.copyWith(
+      missionTypeId: missionTypeId,
+      targetCount: mission.defaultTarget,
+    );
+    await _storageService.saveAlarmSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateTargetCount(int count) async {
+    _settings = _settings.copyWith(targetCount: count);
+    await _storageService.saveAlarmSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateAlarmSound(String soundId) async {
+    _settings = _settings.copyWith(alarmSoundId: soundId);
+    await _storageService.saveAlarmSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateCustomSound(String? path, {String? name}) async {
+    _settings = _settings.copyWith(
+      alarmSoundId: path != null ? 'custom' : 'fanfare',
+      customSoundPath: path,
+      customSoundName: name,
+    );
+    await _storageService.saveAlarmSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> updateAlarmVolume(double volume) async {
+    _settings = _settings.copyWith(alarmVolume: volume.clamp(0.3, 1.0));
     await _storageService.saveAlarmSettings(_settings);
     notifyListeners();
   }
@@ -41,23 +76,20 @@ class AlarmState extends ChangeNotifier {
 
   void triggerAlarm() {
     _isAlarmRinging = true;
-    _completedReps = 0;
+    _completedCount = 0;
+    _alarmTriggeredAt = DateTime.now();
     notifyListeners();
   }
 
-  void incrementRep() {
-    _completedReps++;
-    notifyListeners();
-  }
-
-  void updateReps(int reps) {
-    _completedReps = reps;
+  void updateCount(int count) {
+    _completedCount = count;
     notifyListeners();
   }
 
   void resetAlarm() {
     _isAlarmRinging = false;
-    _completedReps = 0;
+    _completedCount = 0;
+    _alarmTriggeredAt = null;
     notifyListeners();
   }
 }

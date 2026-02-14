@@ -45,6 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>アラーム音として音楽ライブラリの曲を使用します</string>
 	<key>NSCameraUsageDescription</key>
 	<string>アラーム解除のために筋トレの動きを検出するためにカメラを使用します</string>
 	<key>UIBackgroundModes</key>
