@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/mission_type.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
 import '../state/premium_state.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,9 +17,82 @@ class _HomeScreenState extends State<HomeScreen> {
   MissionCategory _selectedCategory = MissionCategory.workout;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final langState = context.read<LanguageState>();
+      if (langState.isFirstLaunch) {
+        _showLanguageDialog();
+      }
+    });
+  }
+
+  void _showLanguageDialog() {
+    final langState = context.read<LanguageState>();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          '言語を選択 / Select Language',
+          style: TextStyle(fontSize: 18, color: Colors.black87),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  langState.setLanguage('ja');
+                  Navigator.pop(ctx);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF533483),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('日本語',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  langState.setLanguage('en');
+                  Navigator.pop(ctx);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF533483)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('English',
+                    style: TextStyle(color: Color(0xFF533483), fontSize: 16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
     final isPremium = context.watch<PremiumState>().isPremium;
+    final s = context.watch<LanguageState>().strings;
     final settings = alarmState.settings;
     final selectedMission = alarmState.missionType;
 
@@ -34,16 +108,23 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '朝型強制変換アラーム',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Flexible(
+                    child: Text(
+                      s.appTitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Row(
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.language,
+                            color: Colors.white70),
+                        onPressed: _showLanguageDialog,
+                      ),
                       IconButton(
                         icon: const Icon(Icons.bar_chart,
                             color: Colors.white70),
@@ -69,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               // Alarm time picker
               GestureDetector(
-                onTap: () => _showTimePicker(context, alarmState),
+                onTap: () => _showTimePicker(context, alarmState, s),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
@@ -91,11 +172,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 24),
               // Mission section header
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'モーニングミッション',
-                  style: TextStyle(
+                  s.morningMission,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -107,6 +188,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: MissionCategory.values.map((category) {
                   final isSelected = _selectedCategory == category;
+                  final catName = category == MissionCategory.workout
+                      ? s.categoryWorkout
+                      : s.categoryStudy;
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -134,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   size: 18),
                               const SizedBox(width: 6),
                               Text(
-                                category.displayName,
+                                catName,
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.white
@@ -154,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 12),
-              // Mission list (type selection only, no count displayed)
+              // Mission list
               Expanded(
                 child: ListView(
                   children: MissionType.byCategory(_selectedCategory)
@@ -200,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 16),
                               Text(
-                                mission.displayName,
+                                s.missionName(mission.id),
                                 style: TextStyle(
                                   color: isLocked
                                       ? Colors.grey[700]
@@ -222,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 4),
                               GestureDetector(
                                 onTap: () =>
-                                    _showMissionInfo(context, mission),
+                                    _showMissionInfo(context, mission, s),
                                 child: Icon(Icons.info_outline,
                                     color: Colors.grey[600], size: 18),
                               ),
@@ -242,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (selectedMission.detectionMode == DetectionMode.repBased)
                 GestureDetector(
                   onTap: () => _showTargetPicker(
-                      context, alarmState, selectedMission),
+                      context, alarmState, selectedMission, s),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),
@@ -254,14 +338,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '目標',
+                          s.target,
                           style: TextStyle(
                               color: Colors.grey[400], fontSize: 14),
                         ),
                         Row(
                           children: [
                             Text(
-                              '${settings.targetCount}${selectedMission.targetUnit}',
+                              '${settings.targetCount}${selectedMission.detectionMode == DetectionMode.repBased ? s.unitReps : s.unitSeconds}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -292,9 +376,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'おやすみ',
-                    style: TextStyle(
+                  child: Text(
+                    s.goodNight,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -304,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'アプリを閉じないでください',
+                s.doNotCloseApp,
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
               const SizedBox(height: 16),
@@ -315,28 +399,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showMissionInfo(BuildContext context, MissionType mission) {
-    String description;
-    switch (mission.id) {
-      case 'squat':
-        description =
-            'カメラの前でスクワットをしてください。\n\n全身が映るようにスマホを置き、膝の曲げ伸ばしが検出されると1回カウントされます。';
-      case 'pushUp':
-        description =
-            'カメラの前で腕立て伏せをしてください。\n\n上半身が映るようにスマホを置き、腕の曲げ伸ばしが検出されると1回カウントされます。';
-      case 'burpee':
-        description =
-            'カメラの前でバーピーをしてください。\n\n全身が映るようにスマホを置き、しゃがむ→伏せる→立ち上がるの動作が検出されると1回カウントされます。';
-      case 'reading':
-        description =
-            '本や参考書をカメラに映してください。\n\n背面カメラで本を映し続けると、検出されている間タイマーが進みます。';
-      case 'studying':
-        description =
-            'ペンをカメラに映してください。\n\n背面カメラでペンなどの文房具を映すと、検出されている間タイマーが進みます。';
-      default:
-        description = '';
-    }
-
+  void _showMissionInfo(
+      BuildContext context, MissionType mission, dynamic s) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -349,13 +413,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(mission.icon, color: const Color(0xFF533483), size: 24),
             const SizedBox(width: 8),
             Text(
-              mission.displayName,
+              s.missionName(mission.id),
               style: const TextStyle(fontSize: 18),
             ),
           ],
         ),
         content: Text(
-          description,
+          s.missionInfo(mission.id),
           style: const TextStyle(
             color: Color(0xFF444444),
             fontSize: 14,
@@ -373,12 +437,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showTargetPicker(
-      BuildContext context, AlarmState alarmState, MissionType mission) {
+  void _showTargetPicker(BuildContext context, AlarmState alarmState,
+      MissionType mission, dynamic s) {
     final min = mission.minTarget;
     final max = mission.maxTarget;
     final current = alarmState.settings.targetCount.clamp(min, max);
     int selectedValue = current;
+    final unit = mission.detectionMode == DetectionMode.repBased
+        ? s.unitReps
+        : s.unitSeconds;
 
     showModalBottomSheet(
       context: context,
@@ -399,11 +466,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('キャンセル',
-                          style: TextStyle(color: Colors.grey)),
+                      child: Text(s.cancel,
+                          style: const TextStyle(color: Colors.grey)),
                     ),
                     Text(
-                      '目標 (${mission.targetUnit})',
+                      '${s.target} ($unit)',
                       style: const TextStyle(
                           color: Colors.white70, fontSize: 14),
                     ),
@@ -412,8 +479,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         alarmState.updateTargetCount(selectedValue);
                         Navigator.pop(context);
                       },
-                      child: const Text('設定',
-                          style: TextStyle(color: Color(0xFF533483))),
+                      child: Text(s.done,
+                          style:
+                              const TextStyle(color: Color(0xFF533483))),
                     ),
                   ],
                 ),
@@ -446,7 +514,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showTimePicker(BuildContext context, AlarmState alarmState) {
+  void _showTimePicker(
+      BuildContext context, AlarmState alarmState, dynamic s) {
     final settings = alarmState.settings;
     int selectedHour = settings.alarmTime.hour;
     int selectedMinute = settings.alarmTime.minute;
@@ -470,8 +539,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('キャンセル',
-                          style: TextStyle(color: Colors.grey)),
+                      child: Text(s.cancel,
+                          style: const TextStyle(color: Colors.grey)),
                     ),
                     TextButton(
                       onPressed: () {
@@ -481,8 +550,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                         Navigator.pop(context);
                       },
-                      child: const Text('設定',
-                          style: TextStyle(color: Color(0xFF533483))),
+                      child: Text(s.done,
+                          style:
+                              const TextStyle(color: Color(0xFF533483))),
                     ),
                   ],
                 ),

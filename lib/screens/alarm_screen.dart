@@ -5,6 +5,7 @@ import '../models/mission_type.dart';
 import '../services/audio_service.dart';
 import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
 
 class AlarmScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -72,16 +73,20 @@ class _AlarmScreenState extends State<AlarmScreen>
   @override
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
+    final s = context.watch<LanguageState>().strings;
     final mission = alarmState.missionType;
+
     String instructionText;
     switch (mission.id) {
       case 'reading':
-        instructionText = '本や参考書を${alarmState.targetCount}秒カメラに映してアラームを解除';
-      case 'studying':
-        instructionText = 'ペンを${alarmState.targetCount}秒カメラに映してアラームを解除';
-      default:
         instructionText =
-            '${mission.displayName}を${alarmState.targetCount}回行ってアラームを解除';
+            s.alarmInstructionReading(alarmState.targetCount);
+      case 'studying':
+        instructionText =
+            s.alarmInstructionStudying(alarmState.targetCount);
+      default:
+        instructionText = s.alarmInstructionExercise(
+            s.missionName(mission.id), alarmState.targetCount);
     }
 
     return PopScope(
@@ -102,9 +107,9 @@ class _AlarmScreenState extends State<AlarmScreen>
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  '起きる時間です！',
-                  style: TextStyle(
+                Text(
+                  s.wakeUpTime,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -138,8 +143,8 @@ class _AlarmScreenState extends State<AlarmScreen>
                     ),
                     child: Text(
                       mission.category == MissionCategory.workout
-                          ? '運動を始める'
-                          : '始める',
+                          ? s.startExercise
+                          : s.start,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -150,13 +155,13 @@ class _AlarmScreenState extends State<AlarmScreen>
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  '明るい場所で行ってください',
+                  s.brightPlace,
                   style: TextStyle(color: Colors.grey[500], fontSize: 12),
                 ),
                 if (mission.category == MissionCategory.workout) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'スマホスタンドの使用を推奨します',
+                    s.recommendStand,
                     style: TextStyle(color: Colors.grey[500], fontSize: 12),
                   ),
                 ],

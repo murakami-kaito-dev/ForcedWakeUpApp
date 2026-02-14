@@ -17,6 +17,17 @@ class PremiumState extends ChangeNotifier {
 
   bool get isPremium => debugOverridePremium || _isPremium;
 
+  /// Localized price string from the store (e.g. "¥500", "$6.99")
+  String? get monthlyPrice => _subscriptionService.monthlyProduct?.price;
+  String? get yearlyPrice => _subscriptionService.yearlyProduct?.price;
+
+  /// Raw price value for calculations
+  double? get monthlyRawPrice => _subscriptionService.monthlyProduct?.rawPrice;
+  double? get yearlyRawPrice => _subscriptionService.yearlyProduct?.rawPrice;
+
+  /// Currency symbol from the store
+  String? get currencySymbol => _subscriptionService.monthlyProduct?.currencySymbol;
+
   Future<void> initialize() async {
     await _subscriptionService.initialize();
     _isPremium = _subscriptionService.isPremium;

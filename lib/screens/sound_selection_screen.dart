@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../models/alarm_sound.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
 import '../state/premium_state.dart';
 
 class SoundSelectionScreen extends StatefulWidget {
@@ -170,15 +171,17 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
       await alarmState.updateCustomSound(destPath, name: displayName);
 
       if (mounted) {
+        final s = context.read<LanguageState>().strings;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$displayName を設定しました')),
+          SnackBar(content: Text(s.soundSet(displayName))),
         );
       }
     } catch (e) {
       _isPickingFile = false;
       if (mounted) {
+        final s = context.read<LanguageState>().strings;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ファイルの選択に失敗しました')),
+          SnackBar(content: Text(s.filePickFailed)),
         );
       }
     }
@@ -191,6 +194,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
   }
 
   void _showVolumeInfo() {
+    final s = context.read<LanguageState>().strings;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -198,43 +202,43 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'アラーム音量について',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+        title: Text(
+          s.volumeInfoTitle,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '無料プラン',
-              style: TextStyle(
+              s.freePlanLabel,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              'アラームは常に最大音量で鳴ります。確実に起きるための仕様です。',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+              s.freePlanVolumeDesc,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Premiumプラン',
-              style: TextStyle(
+              s.premiumPlanLabel,
+              style: const TextStyle(
                 color: Color(0xFFFFD700),
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              'お好みの音量に調整できます。設定した音量でアラームが鳴ります。',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+              s.premiumPlanVolumeDesc,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              '※ 試聴はデバイスの現在の音量で再生されます。',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+              s.volumePreviewNote,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
@@ -253,6 +257,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
     final isPremium = context.watch<PremiumState>().isPremium;
+    final s = context.watch<LanguageState>().strings;
     final selectedSoundId = alarmState.settings.alarmSoundId;
     final customSoundPath = alarmState.settings.customSoundPath;
     final customSoundName = alarmState.settings.customSoundName;
@@ -263,7 +268,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title:
-            const Text('アラーム音', style: TextStyle(color: Colors.white)),
+            Text(s.alarmSound, style: const TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -284,9 +289,9 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
               children: [
                 Row(
                   children: [
-                    const Text(
-                      '音量',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    Text(
+                      s.volume,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
@@ -325,9 +330,9 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('小',
+                      Text(s.volumeMin,
                           style: TextStyle(color: Colors.grey[600])),
-                      Text('大',
+                      Text(s.volumeMax,
                           style: TextStyle(color: Colors.grey[600])),
                     ],
                   ),
@@ -342,7 +347,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                     onChanged: null,
                   ),
                   Text(
-                    'アラームは最大音量で鳴ります',
+                    s.alarmAtMaxVolume,
                     style: TextStyle(color: Colors.grey[500], fontSize: 12),
                   ),
                 ],
@@ -350,9 +355,9 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'アラーム音を選択',
-            style: TextStyle(
+          Text(
+            s.selectAlarmSound,
+            style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold),
@@ -399,7 +404,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        sound.displayName,
+                        s.soundName(sound.id),
                         style: TextStyle(
                           color:
                               isLocked ? Colors.grey[600] : Colors.white,
@@ -466,7 +471,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '端末から選択',
+                          s.selectFromDevice,
                           style: TextStyle(
                             color: !isPremium
                                 ? Colors.grey[600]

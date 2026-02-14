@@ -14,6 +14,7 @@ import '../state/alarm_state.dart';
 import '../utils/camera_helper.dart';
 import '../utils/exercise_detector.dart';
 import '../utils/study_detector.dart';
+import '../state/language_state.dart';
 import '../widgets/pose_painter.dart';
 
 class ExerciseScreen extends StatefulWidget {
@@ -285,6 +286,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   void _showSkipDetectionDialog() {
+    final s = context.read<LanguageState>().strings;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -292,19 +294,19 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          '検知をスキップしますか？',
-          style: TextStyle(color: Colors.black87, fontSize: 18),
+        title: Text(
+          s.skipDetectionTitle,
+          style: const TextStyle(color: Colors.black87, fontSize: 18),
         ),
-        content: const Text(
-          '実際に本やペンを用意しているのに検知されない場合、今日は達成扱いにできます。',
-          style: TextStyle(color: Colors.black54, fontSize: 14),
+        content: Text(
+          s.skipDetectionBody,
+          style: const TextStyle(color: Colors.black54, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('戻る',
-                style: TextStyle(color: Colors.grey)),
+            child: Text(s.back,
+                style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () {
@@ -313,8 +315,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               _cameraController?.stopImageStream().catchError((_) {});
               Navigator.pushReplacementNamed(context, '/completion');
             },
-            child: const Text('達成にする',
-                style: TextStyle(color: Colors.blue)),
+            child: Text(s.markComplete,
+                style: const TextStyle(color: Colors.blue)),
           ),
         ],
       ),
@@ -322,6 +324,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   void _showQuitDialog() {
+    final s = context.read<LanguageState>().strings;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -329,19 +332,19 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          '本当にやめますか？',
-          style: TextStyle(color: Colors.black87, fontSize: 18),
+        title: Text(
+          s.reallyQuitTitle,
+          style: const TextStyle(color: Colors.black87, fontSize: 18),
         ),
-        content: const Text(
-          'アラームを停止してホーム画面に戻ります。',
-          style: TextStyle(color: Colors.black54, fontSize: 14),
+        content: Text(
+          s.reallyQuitBody,
+          style: const TextStyle(color: Colors.black54, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('続ける',
-                style: TextStyle(color: Colors.grey)),
+            child: Text(s.continueBtn,
+                style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () {
@@ -351,8 +354,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               context.read<AlarmState>().resetAlarm();
               Navigator.pushReplacementNamed(context, '/');
             },
-            child: const Text('やめる',
-                style: TextStyle(color: Color(0xFFE94560))),
+            child: Text(s.quitBtn,
+                style: const TextStyle(color: Color(0xFFE94560))),
           ),
         ],
       ),
@@ -362,6 +365,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
+    final s = context.watch<LanguageState>().strings;
     final isDurationBased =
         _mission.detectionMode == DetectionMode.durationBased;
 
@@ -411,7 +415,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 child: Column(
                   children: [
                     Text(
-                      _mission.displayName,
+                      s.missionName(_mission.id),
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
@@ -420,7 +424,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     const SizedBox(height: 8),
                     if (isDurationBased) ...[
                       Text(
-                        '残り ${alarmState.remainingCount} 秒',
+                        s.remainingSec(alarmState.remainingCount),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 48,
@@ -428,24 +432,24 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         ),
                       ),
                       if (_isCurrentlyDetected)
-                        const Text(
-                          '検出中...',
-                          style: TextStyle(
+                        Text(
+                          s.detecting,
+                          style: const TextStyle(
                             color: Colors.greenAccent,
                             fontSize: 16,
                           ),
                         )
                       else
-                        const Text(
-                          '対象物をカメラに映してください',
-                          style: TextStyle(
+                        Text(
+                          s.showObjectToCamera,
+                          style: const TextStyle(
                             color: Colors.orangeAccent,
                             fontSize: 14,
                           ),
                         ),
                     ] else
                       Text(
-                        '残り ${alarmState.remainingCount} 回',
+                        s.remainingReps(alarmState.remainingCount),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 48,
@@ -543,9 +547,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
-                            'うまく検知できない場合',
-                            style: TextStyle(
+                          child: Text(
+                            s.detectionTrouble,
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
                             ),
@@ -557,7 +561,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     GestureDetector(
                       onTap: _showQuitDialog,
                       child: Text(
-                        '今日はやめる',
+                        s.quitToday,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.4),
                           fontSize: 13,

@@ -9,6 +9,7 @@ import 'screens/paywall_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/sound_selection_screen.dart';
 import 'services/statistics_service.dart';
+import 'state/language_state.dart';
 
 class ForcedWakeUpApp extends StatelessWidget {
   const ForcedWakeUpApp({super.key});
@@ -16,9 +17,10 @@ class ForcedWakeUpApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statisticsService = context.read<StatisticsService>();
+    final s = context.watch<LanguageState>().strings;
 
     return MaterialApp(
-      title: '朝型強制変換アラーム',
+      title: s.appTitle,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

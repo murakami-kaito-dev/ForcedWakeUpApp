@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -69,6 +70,7 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   void _showCancelDialog() {
+    final s = context.read<LanguageState>().strings;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -76,19 +78,19 @@ class _SleepScreenState extends State<SleepScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'アラームを解除しますか？',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+        title: Text(
+          s.cancelAlarmTitle,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
-        content: const Text(
-          'ホーム画面に戻ります。',
-          style: TextStyle(color: Colors.white70, fontSize: 14),
+        content: Text(
+          s.cancelAlarmBody,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('キャンセル',
-                style: TextStyle(color: Colors.grey)),
+            child: Text(s.cancel,
+                style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () {
@@ -97,8 +99,8 @@ class _SleepScreenState extends State<SleepScreen> {
               WakelockPlus.disable();
               Navigator.pushReplacementNamed(this.context, '/');
             },
-            child: const Text('解除する',
-                style: TextStyle(color: Color(0xFFE94560))),
+            child: Text(s.cancelAlarmConfirm,
+                style: const TextStyle(color: Color(0xFFE94560))),
           ),
         ],
       ),
@@ -107,6 +109,8 @@ class _SleepScreenState extends State<SleepScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<LanguageState>().strings;
+
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
@@ -133,7 +137,7 @@ class _SleepScreenState extends State<SleepScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    '充電しておやすみください',
+                    s.chargeAndSleep,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.4),
                       fontSize: 15,

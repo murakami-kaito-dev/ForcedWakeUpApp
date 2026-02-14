@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../models/mission_type.dart';
 import '../services/statistics_service.dart';
+import '../state/language_state.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -47,6 +49,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.watch<LanguageState>().strings;
     final successRate = _monthlyStats['total'] != null &&
             _monthlyStats['total']! > 0
         ? ((_monthlyStats['successes'] ?? 0) / _monthlyStats['total']! * 100)
@@ -58,7 +61,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('統計', style: TextStyle(color: Colors.white)),
+        title: Text(s.statistics,
+            style: const TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -74,8 +78,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Expanded(
                   child: _StatCard(
-                    label: '連続記録',
-                    value: '$_currentStreak日',
+                    label: s.currentStreak,
+                    value: s.daysSuffix(_currentStreak),
                     icon: Icons.local_fire_department,
                     color: Colors.orangeAccent,
                   ),
@@ -83,8 +87,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
-                    label: '最長記録',
-                    value: '$_bestStreak日',
+                    label: s.bestStreak,
+                    value: s.daysSuffix(_bestStreak),
                     icon: Icons.emoji_events,
                     color: const Color(0xFFFFD700),
                   ),
@@ -96,7 +100,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Expanded(
                   child: _StatCard(
-                    label: '今月の成功率',
+                    label: s.monthlySuccessRate,
                     value: '$successRate%',
                     icon: Icons.trending_up,
                     color: Colors.greenAccent,
@@ -105,8 +109,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
-                    label: '今月の試行回数',
-                    value: '${_monthlyStats['total'] ?? 0}回',
+                    label: s.monthlyAttempts,
+                    value: s.timesSuffix(_monthlyStats['total'] ?? 0),
                     icon: Icons.repeat,
                     color: Colors.blueAccent,
                   ),
@@ -115,9 +119,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             ),
             const SizedBox(height: 24),
             // Calendar
-            const Text(
-              'カレンダー',
-              style: TextStyle(
+            Text(
+              s.calendar,
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold),
@@ -137,7 +141,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 headerStyle: const HeaderStyle(
                   formatButtonVisible: false,
                   titleCentered: true,
-                  titleTextStyle: TextStyle(color: Colors.white, fontSize: 16),
+                  titleTextStyle:
+                      TextStyle(color: Colors.white, fontSize: 16),
                   leftChevronIcon:
                       Icon(Icons.chevron_left, color: Colors.white),
                   rightChevronIcon:
@@ -148,8 +153,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   weekendStyle: TextStyle(color: Colors.white54),
                 ),
                 calendarStyle: CalendarStyle(
-                  defaultTextStyle: const TextStyle(color: Colors.white70),
-                  weekendTextStyle: const TextStyle(color: Colors.white70),
+                  defaultTextStyle:
+                      const TextStyle(color: Colors.white70),
+                  weekendTextStyle:
+                      const TextStyle(color: Colors.white70),
                   outsideTextStyle: TextStyle(color: Colors.grey[800]),
                   todayDecoration: const BoxDecoration(
                     color: Colors.white24,
@@ -163,7 +170,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 eventLoader: (day) {
                   final normalized =
                       DateTime(day.year, day.month, day.day);
-                  return _successDates.contains(normalized) ? ['success'] : [];
+                  return _successDates.contains(normalized)
+                      ? ['success']
+                      : [];
                 },
                 onPageChanged: (focusedDay) {
                   setState(() => _focusedDay = focusedDay);
@@ -173,9 +182,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             const SizedBox(height: 24),
             // Mission breakdown
             if (_missionBreakdown.isNotEmpty) ...[
-              const Text(
-                'ミッション別実績',
-                style: TextStyle(
+              Text(
+                s.missionBreakdown,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
@@ -193,15 +202,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(mission.icon, color: Colors.white70, size: 24),
+                        Icon(mission.icon,
+                            color: Colors.white70, size: 24),
                         const SizedBox(width: 12),
                         Text(
-                          mission.displayName,
-                          style: const TextStyle(color: Colors.white),
+                          s.missionName(mission.id),
+                          style:
+                              const TextStyle(color: Colors.white),
                         ),
                         const Spacer(),
                         Text(
-                          '${entry.value}回',
+                          s.timesSuffix(entry.value),
                           style: const TextStyle(
                             color: Color(0xFF533483),
                             fontWeight: FontWeight.bold,
@@ -255,7 +266,8 @@ class _StatCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+          Text(label,
+              style: TextStyle(color: Colors.grey[400], fontSize: 12)),
         ],
       ),
     );

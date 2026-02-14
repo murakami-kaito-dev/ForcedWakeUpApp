@@ -15,6 +15,18 @@ class SubscriptionService {
 
   bool get isPremium => _isPremium;
 
+  ProductDetails? get monthlyProduct =>
+      products.cast<ProductDetails?>().firstWhere(
+            (p) => p!.id == _monthlyId,
+            orElse: () => null,
+          );
+
+  ProductDetails? get yearlyProduct =>
+      products.cast<ProductDetails?>().firstWhere(
+            (p) => p!.id == _yearlyId,
+            orElse: () => null,
+          );
+
   Future<void> initialize() async {
     final available = await _iap.isAvailable();
     if (!available) return;

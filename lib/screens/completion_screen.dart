@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
 import '../state/premium_state.dart';
 
 class CompletionScreen extends StatefulWidget {
@@ -78,8 +79,8 @@ class _CompletionScreenState extends State<CompletionScreen>
   }
 
   void _shareAchievement() {
-    final text = '朝型強制変換アラームで$_currentStreak日連続起床達成！\n運動しないと止まらないアラームで朝型生活を継続中';
-    Share.share(text);
+    final s = context.read<LanguageState>().strings;
+    Share.share(s.shareText(_currentStreak));
   }
 
   @override
@@ -91,6 +92,7 @@ class _CompletionScreenState extends State<CompletionScreen>
   @override
   Widget build(BuildContext context) {
     final isPremium = context.watch<PremiumState>().isPremium;
+    final s = context.watch<LanguageState>().strings;
 
     return PopScope(
       canPop: false,
@@ -114,18 +116,18 @@ class _CompletionScreenState extends State<CompletionScreen>
                   opacity: _opacityAnimation,
                   child: Column(
                     children: [
-                      const Text(
-                        'おはようございます！',
-                        style: TextStyle(
+                      Text(
+                        s.goodMorning,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        '素晴らしい！今日も良い一日を。',
-                        style: TextStyle(
+                      Text(
+                        s.haveANiceDay,
+                        style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
                         ),
@@ -146,7 +148,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                                   color: Colors.orangeAccent, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                '$_currentStreak日連続',
+                                s.streakDays(_currentStreak),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -173,12 +175,14 @@ class _CompletionScreenState extends State<CompletionScreen>
                             onPressed: _shareAchievement,
                             icon: const Icon(Icons.share,
                                 color: Color(0xFF533483)),
-                            label: const Text(
-                              'シェアする',
-                              style: TextStyle(color: Color(0xFF533483)),
+                            label: Text(
+                              s.share,
+                              style:
+                                  const TextStyle(color: Color(0xFF533483)),
                             ),
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFF533483)),
+                              side: const BorderSide(
+                                  color: Color(0xFF533483)),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -201,9 +205,9 @@ class _CompletionScreenState extends State<CompletionScreen>
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: const Text(
-                            'ホームに戻る',
-                            style: TextStyle(
+                          child: Text(
+                            s.backToHome,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                             ),

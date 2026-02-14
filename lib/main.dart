@@ -7,6 +7,7 @@ import 'services/statistics_service.dart';
 import 'services/storage_service.dart';
 import 'services/subscription_service.dart';
 import 'state/alarm_state.dart';
+import 'state/language_state.dart';
 import 'state/premium_state.dart';
 
 void main() async {
@@ -22,11 +23,14 @@ void main() async {
   final premiumState = PremiumState(subscriptionService);
   await premiumState.initialize();
 
+  final languageState = LanguageState(prefs);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AlarmState(storageService)),
         ChangeNotifierProvider.value(value: premiumState),
+        ChangeNotifierProvider.value(value: languageState),
         Provider.value(value: statisticsService),
       ],
       child: const ForcedWakeUpApp(),
