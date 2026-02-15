@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
@@ -12,7 +13,8 @@ import 'state/language_state.dart';
 import 'state/premium_state.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   final prefs = await SharedPreferences.getInstance();
   final storageService = StorageService(prefs);
@@ -26,6 +28,10 @@ void main() async {
   await premiumState.initialize();
 
   final languageState = LanguageState(prefs);
+
+  // --- スプラッシュ表示時間（秒数を変更して調整） ---
+  await Future.delayed(const Duration(milliseconds: 500));
+  FlutterNativeSplash.remove();
 
   runApp(
     MultiProvider(

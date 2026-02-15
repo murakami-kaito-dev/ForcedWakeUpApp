@@ -110,6 +110,7 @@ class AppStrings {
   final String recommended;
   final String subscribe;
   final String restorePurchase;
+  final String redeemOfferCode;
   String purchaseFailed(String e) => _purchaseFailedFn(e);
   final String Function(String) _purchaseFailedFn;
 
@@ -236,6 +237,7 @@ class AppStrings {
     required this.recommended,
     required this.subscribe,
     required this.restorePurchase,
+    required this.redeemOfferCode,
     required String Function(String) purchaseFailedFn,
     required this.statistics,
     required this.currentStreak,
@@ -386,6 +388,7 @@ class AppStrings {
     recommended: 'おすすめ',
     subscribe: 'サブスクリプションを購入する',
     restorePurchase: '購入を復元',
+    redeemOfferCode: 'プロモーションコードを入力',
     purchaseFailedFn: _jaPurchaseFailed,
     statistics: '統計',
     currentStreak: '連続記録',
@@ -525,6 +528,7 @@ class AppStrings {
     recommended: 'Best Value',
     subscribe: 'Subscribe',
     restorePurchase: 'Restore Purchase',
+    redeemOfferCode: 'Redeem Offer Code',
     purchaseFailedFn: _enPurchaseFailed,
     statistics: 'Statistics',
     currentStreak: 'Current Streak',

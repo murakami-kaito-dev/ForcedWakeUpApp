@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:provider/provider.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
@@ -164,6 +167,21 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       const TextStyle(color: AppColors.textHint, fontSize: 14),
                 ),
               ),
+              if (Platform.isIOS)
+                TextButton(
+                  onPressed: () {
+                    final iapStoreKitPlatformAddition = InAppPurchase.instance
+                        .getPlatformAddition<
+                            InAppPurchaseStoreKitPlatformAddition>();
+                    iapStoreKitPlatformAddition
+                        .presentCodeRedemptionSheet();
+                  },
+                  child: Text(
+                    s.redeemOfferCode,
+                    style: const TextStyle(
+                        color: AppColors.textHint, fontSize: 14),
+                  ),
+                ),
               const SizedBox(height: 24),
             ],
           ),
