@@ -79,7 +79,7 @@ class SquatMission extends MissionType {
           detectionMode: DetectionMode.repBased,
           defaultTarget: 10,
           minTarget: 5,
-          maxTarget: 50,
+          maxTarget: 20,
         );
 }
 
@@ -94,7 +94,7 @@ class PushUpMission extends MissionType {
           detectionMode: DetectionMode.repBased,
           defaultTarget: 10,
           minTarget: 5,
-          maxTarget: 30,
+          maxTarget: 20,
         );
 }
 
@@ -108,7 +108,7 @@ class BurpeeMission extends MissionType {
           isPremium: true,
           detectionMode: DetectionMode.repBased,
           defaultTarget: 5,
-          minTarget: 3,
+          minTarget: 5,
           maxTarget: 20,
         );
 }

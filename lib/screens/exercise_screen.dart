@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:volume_controller/volume_controller.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart'
     as mlkit_od;
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
@@ -11,6 +12,7 @@ import '../services/pose_detection_service.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import '../services/image_labeling_service.dart';
 import '../state/alarm_state.dart';
+import '../state/premium_state.dart';
 import '../utils/camera_helper.dart';
 import '../utils/exercise_detector.dart';
 import '../utils/study_detector.dart';
@@ -32,6 +34,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   ImageLabelingService? _labelingService;
   mlkit_od.ObjectDetector? _objectDetector;
   final AudioService _audioService = AudioService();
+  StreamSubscription<double>? _volumeSubscription;
 
   late MissionType _mission;
   ExerciseDetector? _exerciseDetector;
@@ -82,11 +85,21 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     }
 
     final settings = alarmState.settings;
+    final isPremium = context.read<PremiumState>().isPremium;
+    final alarmVolume = isPremium ? settings.alarmVolume : 1.0;
     _audioService.playAlarm(
       soundId: settings.alarmSoundId,
-      volume: settings.alarmVolume,
+      volume: alarmVolume,
       customSoundPath: settings.customSoundPath,
     );
+
+    // Prevent volume changes during exercise
+    VolumeController().showSystemUI = false;
+    _volumeSubscription = VolumeController().listener((volume) {
+      if (volume < alarmVolume - 0.01) {
+        VolumeController().setVolume(alarmVolume);
+      }
+    });
 
     _startAutoStopTimer();
     _initCamera();
@@ -98,8 +111,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     _autoStopTimer = Timer(const Duration(minutes: _autoStopMinutes), () {
       _audioService.stopAlarm();
       if (mounted) {
-        context.read<AlarmState>().resetAlarm();
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/failure');
       }
     });
     // Update display every second
@@ -126,7 +138,10 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
         if (_detectedSeconds >= alarmState.targetCount) {
           _audioService.stopAlarm();
-          _cameraController?.stopImageStream().catchError((_) {});
+          final ctrl = _cameraController;
+          _cameraController = null;
+          _isCameraReady = false;
+          ctrl?.stopImageStream().catchError((_) {});
           Navigator.pushReplacementNamed(context, '/completion');
         }
       }
@@ -199,7 +214,10 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
         if (reps >= alarmState.targetCount) {
           _audioService.stopAlarm();
-          _cameraController?.stopImageStream().catchError((_) {});
+          final ctrl = _cameraController;
+          _cameraController = null;
+          _isCameraReady = false;
+          ctrl?.stopImageStream().catchError((_) {});
           Navigator.pushReplacementNamed(context, '/completion');
           return;
         }
@@ -256,14 +274,19 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   Future<void> _reloadCamera() async {
-    await _cameraController?.stopImageStream().catchError((_) {});
-    await _cameraController?.dispose();
-    _poseService?.dispose();
+    // Save reference and clear state BEFORE disposing
+    final oldController = _cameraController;
+    _cameraController = null;
 
     setState(() {
       _isCameraReady = false;
       _poses = [];
     });
+
+    // Now safely dispose the old controller
+    await oldController?.stopImageStream().catchError((_) {});
+    await oldController?.dispose();
+    _poseService?.dispose();
 
     if (_mission.detectionMode == DetectionMode.repBased) {
       _poseService = PoseDetectionService();
@@ -274,11 +297,14 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
   @override
   void dispose() {
+    _isCameraReady = false;
+    _volumeSubscription?.cancel();
     _autoStopTimer?.cancel();
     _autoStopDisplayTimer?.cancel();
     _durationTimer?.cancel();
     _cameraController?.stopImageStream().catchError((_) {});
     _cameraController?.dispose();
+    _cameraController = null;
     _poseService?.dispose();
     _labelingService?.dispose();
     _objectDetector?.close();
@@ -300,7 +326,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           style: const TextStyle(color: Colors.black87, fontSize: 18),
         ),
         content: Text(
-          s.skipDetectionBody,
+          _mission.category == MissionCategory.workout
+              ? s.skipDetectionBodyWorkout
+              : s.skipDetectionBodyStudy,
           style: const TextStyle(color: Colors.black54, fontSize: 14),
         ),
         actions: [
@@ -313,7 +341,10 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             onPressed: () {
               Navigator.pop(dialogContext);
               _audioService.stopAlarm();
-              _cameraController?.stopImageStream().catchError((_) {});
+              final ctrl = _cameraController;
+              _cameraController = null;
+              _isCameraReady = false;
+              ctrl?.stopImageStream().catchError((_) {});
               Navigator.pushReplacementNamed(context, '/completion');
             },
             child: Text(s.markComplete,
@@ -351,9 +382,11 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             onPressed: () {
               Navigator.pop(dialogContext);
               _audioService.stopAlarm();
-              _cameraController?.stopImageStream().catchError((_) {});
-              context.read<AlarmState>().resetAlarm();
-              Navigator.pushReplacementNamed(context, '/');
+              final ctrl = _cameraController;
+              _cameraController = null;
+              _isCameraReady = false;
+              ctrl?.stopImageStream().catchError((_) {});
+              Navigator.pushReplacementNamed(context, '/failure');
             },
             child: Text(s.quitBtn,
                 style: const TextStyle(color: Color(0xFFE94560))),
@@ -378,7 +411,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           fit: StackFit.expand,
           children: [
             // Camera preview
-            if (_isCameraReady && _cameraController != null)
+            if (_isCameraReady &&
+                _cameraController != null &&
+                _cameraController!.value.isInitialized)
               CameraPreview(_cameraController!)
             else
               const Center(
@@ -537,27 +572,25 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         fontSize: 14,
                       ),
                     ),
-                    if (isDurationBased) ...[
-                      const SizedBox(height: 12),
-                      GestureDetector(
-                        onTap: _showSkipDetectionDialog,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            s.detectionTrouble,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: _showSkipDetectionDialog,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          s.detectionTrouble,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
                           ),
                         ),
                       ),
-                    ],
+                    ),
                     const SizedBox(height: 16),
                     GestureDetector(
                       onTap: _showQuitDialog,

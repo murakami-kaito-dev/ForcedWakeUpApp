@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:volume_controller/volume_controller.dart';
 import 'package:provider/provider.dart';
 import '../models/mission_type.dart';
 import '../services/audio_service.dart';
 import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
+import '../state/premium_state.dart';
 import '../theme/app_colors.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class _AlarmScreenState extends State<AlarmScreen>
     with SingleTickerProviderStateMixin {
   final AudioService _audioService = AudioService();
   Timer? _autoStopTimer;
+  StreamSubscription<double>? _volumeSubscription;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -38,33 +41,34 @@ class _AlarmScreenState extends State<AlarmScreen>
     );
 
     final settings = context.read<AlarmState>().settings;
+    final isPremium = context.read<PremiumState>().isPremium;
+    final alarmVolume = isPremium ? settings.alarmVolume : 1.0;
     _audioService.playAlarm(
       soundId: settings.alarmSoundId,
-      volume: settings.alarmVolume,
+      volume: alarmVolume,
       customSoundPath: settings.customSoundPath,
     );
+
+    // Prevent volume changes during alarm
+    VolumeController().showSystemUI = false;
+    _volumeSubscription = VolumeController().listener((volume) {
+      if (volume < alarmVolume - 0.01) {
+        VolumeController().setVolume(alarmVolume);
+      }
+    });
 
     // 10 minute auto-stop
     _autoStopTimer = Timer(const Duration(minutes: 10), () {
       _audioService.stopAlarm();
       if (mounted) {
-        final alarmState = context.read<AlarmState>();
-        // Log failure
-        widget.statisticsService.logResult(
-          missionId: alarmState.settings.missionTypeId,
-          result: 'failure',
-          target: alarmState.targetCount,
-          achieved: alarmState.completedCount,
-          durationSeconds: 600,
-        );
-        alarmState.resetAlarm();
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/failure');
       }
     });
   }
 
   @override
   void dispose() {
+    _volumeSubscription?.cancel();
     _autoStopTimer?.cancel();
     _pulseController.dispose();
     _audioService.dispose();
@@ -80,11 +84,9 @@ class _AlarmScreenState extends State<AlarmScreen>
     String instructionText;
     switch (mission.id) {
       case 'reading':
-        instructionText =
-            s.alarmInstructionReading(alarmState.targetCount);
+        instructionText = s.alarmInstructionReading(alarmState.targetCount);
       case 'studying':
-        instructionText =
-            s.alarmInstructionStudying(alarmState.targetCount);
+        instructionText = s.alarmInstructionStudying(alarmState.targetCount);
       default:
         instructionText = s.alarmInstructionExercise(
             s.missionName(mission.id), alarmState.targetCount);
@@ -147,7 +149,7 @@ class _AlarmScreenState extends State<AlarmScreen>
                           ? s.startExercise
                           : s.start,
                       style: const TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.surface,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -157,13 +159,15 @@ class _AlarmScreenState extends State<AlarmScreen>
                 const SizedBox(height: 24),
                 Text(
                   s.brightPlace,
-                  style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+                  style:
+                      const TextStyle(color: AppColors.textHint, fontSize: 12),
                 ),
                 if (mission.category == MissionCategory.workout) ...[
                   const SizedBox(height: 8),
                   Text(
                     s.recommendStand,
-                    style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+                    style: const TextStyle(
+                        color: AppColors.textHint, fontSize: 12),
                   ),
                 ],
               ],

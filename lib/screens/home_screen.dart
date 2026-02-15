@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       s.appTitle,
                       style: const TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -148,12 +148,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               // Alarm time picker
               GestureDetector(
                 onTap: () => _showTimePicker(context, alarmState, s),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
@@ -171,8 +171,62 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              // Mission section header
+              const SizedBox(height: 8),
+              // Quick time set buttons
+              Row(
+                children: [
+                  _QuickTimeButton(
+                    label: s.nowLabel,
+                    onTap: () {
+                      final now = DateTime.now();
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: now.hour, minute: now.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '+7h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .add(const Duration(hours: 7));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '+1h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .add(const Duration(hours: 1));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '-1h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .subtract(const Duration(hours: 1));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Morning Mission section header
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -320,6 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList(),
                 ),
               ),
+              const SizedBox(height: 12),
               // Target count picker (only for rep-based missions)
               if (selectedMission.detectionMode == DetectionMode.repBased)
                 GestureDetector(
@@ -335,10 +390,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          s.target,
-                          style: const TextStyle(
-                              color: AppColors.textSecondary, fontSize: 14),
+                        Row(
+                          children: [
+                            Text(
+                              s.target,
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary, fontSize: 14),
+                            ),
+                            if (selectedMission.category ==
+                                MissionCategory.workout) ...[
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => _showExerciseModerationInfo(context, s),
+                                child: const Icon(Icons.info_outline,
+                                    color: AppColors.textHint, size: 18),
+                              ),
+                            ],
+                          ],
                         ),
                         Row(
                           children: [
@@ -389,10 +457,51 @@ class _HomeScreenState extends State<HomeScreen> {
                 s.doNotCloseApp,
                 style: const TextStyle(color: AppColors.textHint, fontSize: 12),
               ),
+              const SizedBox(height: 4),
+              Text(
+                s.alarmNotInBackground,
+                style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+              ),
               const SizedBox(height: 16),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showExerciseModerationInfo(BuildContext context, dynamic s) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.info_outline, color: AppColors.accent, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              s.target,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          s.exerciseModeration,
+          style: const TextStyle(
+            color: Color(0xFF444444),
+            fontSize: 14,
+            height: 1.6,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: AppColors.accent)),
+          ),
+        ],
       ),
     );
   }
@@ -570,6 +679,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _QuickTimeButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickTimeButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.accent,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -63,20 +63,9 @@ class AlarmSettings {
   }
 
   factory AlarmSettings.fromJson(Map<String, dynamic> json) {
-    // Migration: old format used integer exerciseType
-    String missionId;
-    if (json.containsKey('missionTypeId')) {
-      missionId = json['missionTypeId'] as String;
-    } else if (json.containsKey('exerciseType')) {
-      final oldIndex = json['exerciseType'] as int;
-      missionId = oldIndex == 0 ? 'squat' : 'pushUp';
-    } else {
-      missionId = 'squat';
-    }
-
     return AlarmSettings(
       alarmTime: TimeOfDay(hour: json['hour'], minute: json['minute']),
-      missionTypeId: missionId,
+      missionTypeId: (json['missionTypeId'] as String?) ?? 'squat',
       isEnabled: json['isEnabled'] ?? true,
       targetCount: json['targetCount'],
       alarmSoundId: (json['alarmSoundId'] as String?) ?? 'fanfare',

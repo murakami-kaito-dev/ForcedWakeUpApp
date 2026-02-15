@@ -25,6 +25,9 @@ class AppStrings {
   final String doNotCloseApp;
   final String cancel;
   final String done;
+  final String nowLabel;
+  final String alarmNotInBackground;
+  final String exerciseModeration;
 
   // --- Home: mission info ---
   final String missionInfoSquat;
@@ -65,7 +68,8 @@ class AppStrings {
 
   // Exercise: skip dialog
   final String skipDetectionTitle;
-  final String skipDetectionBody;
+  final String skipDetectionBodyWorkout;
+  final String skipDetectionBodyStudy;
   final String back;
   final String markComplete;
 
@@ -84,6 +88,12 @@ class AppStrings {
   final String backToHome;
   String shareText(int streak) => _shareTextFn(streak);
   final String Function(int) _shareTextFn;
+  final String shareEditTitle;
+  final String shareEditHint;
+
+  // --- Failure screen ---
+  final String missionFailed;
+  final String tryAgainTomorrow;
 
   // --- Paywall screen ---
   final String unlockAll;
@@ -122,6 +132,9 @@ class AppStrings {
   final String volumeMin;
   final String volumeMax;
   final String alarmAtMaxVolume;
+  final String alarmAtMaxVolumePrefix;
+  final String alarmAtMaxVolumeHighlight;
+  final String alarmAtMaxVolumeSuffix;
   final String selectAlarmSound;
   final String selectFromDevice;
   String soundSet(String name) => _soundSetFn(name);
@@ -135,6 +148,21 @@ class AppStrings {
   final String premiumPlanLabel;
   final String premiumPlanVolumeDesc;
   final String volumePreviewNote;
+
+  // --- Badge ---
+  final String badgesTitle;
+  final Map<String, String> _badgeNames;
+  String badgeName(String id) => _badgeNames[id] ?? id;
+  String badgeUnlockCondition(int days) => _badgeUnlockConditionFn(days);
+  final String Function(int) _badgeUnlockConditionFn;
+  final String badgeEarnedTitle;
+  String badgeEarnedBody(String name) => _badgeEarnedBodyFn(name);
+  final String Function(String) _badgeEarnedBodyFn;
+  String badgeShareText(String name, int streak) =>
+      _badgeShareTextFn(name, streak);
+  final String Function(String, int) _badgeShareTextFn;
+  String unlockedAt(String date) => _unlockedAtFn(date);
+  final String Function(String) _unlockedAtFn;
 
   // --- Language dialog ---
   final String selectLanguageTitle;
@@ -153,6 +181,9 @@ class AppStrings {
     required this.doNotCloseApp,
     required this.cancel,
     required this.done,
+    required this.nowLabel,
+    required this.alarmNotInBackground,
+    required this.exerciseModeration,
     required this.missionInfoSquat,
     required this.missionInfoPushUp,
     required this.missionInfoBurpee,
@@ -177,7 +208,8 @@ class AppStrings {
     required this.detectionTrouble,
     required this.quitToday,
     required this.skipDetectionTitle,
-    required this.skipDetectionBody,
+    required this.skipDetectionBodyWorkout,
+    required this.skipDetectionBodyStudy,
     required this.back,
     required this.markComplete,
     required this.reallyQuitTitle,
@@ -190,6 +222,10 @@ class AppStrings {
     required this.share,
     required this.backToHome,
     required String Function(int) shareTextFn,
+    required this.shareEditTitle,
+    required this.shareEditHint,
+    required this.missionFailed,
+    required this.tryAgainTomorrow,
     required this.unlockAll,
     required this.premiumFeatures,
     required this.yearlyPlan,
@@ -215,6 +251,9 @@ class AppStrings {
     required this.volumeMin,
     required this.volumeMax,
     required this.alarmAtMaxVolume,
+    required this.alarmAtMaxVolumePrefix,
+    required this.alarmAtMaxVolumeHighlight,
+    required this.alarmAtMaxVolumeSuffix,
     required this.selectAlarmSound,
     required this.selectFromDevice,
     required String Function(String) soundSetFn,
@@ -225,8 +264,20 @@ class AppStrings {
     required this.premiumPlanLabel,
     required this.premiumPlanVolumeDesc,
     required this.volumePreviewNote,
+    required Map<String, String> badgeNames,
+    required this.badgesTitle,
+    required String Function(int) badgeUnlockConditionFn,
+    required this.badgeEarnedTitle,
+    required String Function(String) badgeEarnedBodyFn,
+    required String Function(String, int) badgeShareTextFn,
+    required String Function(String) unlockedAtFn,
     required this.selectLanguageTitle,
-  })  : _missionNames = missionNames,
+  })  : _badgeNames = badgeNames,
+        _badgeUnlockConditionFn = badgeUnlockConditionFn,
+        _badgeEarnedBodyFn = badgeEarnedBodyFn,
+        _badgeShareTextFn = badgeShareTextFn,
+        _unlockedAtFn = unlockedAtFn,
+        _missionNames = missionNames,
         _soundNames = soundNames,
         _alarmInstructionReadingFn = alarmInstructionReadingFn,
         _alarmInstructionStudyingFn = alarmInstructionStudyingFn,
@@ -244,7 +295,7 @@ class AppStrings {
         _soundSetFn = soundSetFn;
 
   static final ja = AppStrings._(
-    appTitle: '朝型強制変換\nアラーム',
+    appTitle: 'モーニングルーティン\n強制アラーム',
     missionNames: {
       'squat': 'スクワット',
       'pushUp': '腕立て伏せ',
@@ -267,6 +318,10 @@ class AppStrings {
     doNotCloseApp: 'アプリを閉じないでください',
     cancel: 'キャンセル',
     done: '設定',
+    nowLabel: '現在時刻',
+    alarmNotInBackground: 'バックグラウンドではアラームが鳴りません',
+    exerciseModeration:
+        '無理のない、目が覚めるくらいの回数に設定してください。\n朝から無理のある運動はかえって良くないですからね。',
     missionInfoSquat:
         'カメラの前でスクワットをしてください。\n\n全身が映るようにスマホを置き、膝の曲げ伸ばしが検出されると1回カウントされます。',
     missionInfoPushUp:
@@ -296,7 +351,8 @@ class AppStrings {
     detectionTrouble: 'うまく検知できない場合',
     quitToday: '今日はやめる',
     skipDetectionTitle: '検知をスキップしますか？',
-    skipDetectionBody: '実際に本やペンを用意しているのに検知されない場合、今日は達成扱いにできます。',
+    skipDetectionBodyWorkout: '実際に運動をしているのに検知されない場合、今日は達成扱いにできます。',
+    skipDetectionBodyStudy: '実際に本やペンを用意しているのに検知されない場合、今日は達成扱いにできます。',
     back: '戻る',
     markComplete: '達成にする',
     reallyQuitTitle: '本当にやめますか？',
@@ -309,6 +365,10 @@ class AppStrings {
     share: 'シェアする',
     backToHome: 'ホームに戻る',
     shareTextFn: _jaShareText,
+    shareEditTitle: 'シェア内容を編集',
+    shareEditHint: 'シェアしたいメッセージを入力...',
+    missionFailed: 'ミッション未達成',
+    tryAgainTomorrow: 'また明日チャレンジしましょう！',
     unlockAll: '全ての機能をアンロック',
     premiumFeatures: [
       'バーピー・読書・勉強ミッション',
@@ -341,6 +401,9 @@ class AppStrings {
     volumeMin: '小',
     volumeMax: '大',
     alarmAtMaxVolume: 'アラームは最大音量で鳴ります',
+    alarmAtMaxVolumePrefix: 'アラームは',
+    alarmAtMaxVolumeHighlight: '最大音量',
+    alarmAtMaxVolumeSuffix: 'で鳴ります',
     selectAlarmSound: 'アラーム音を選択',
     selectFromDevice: '端末から選択',
     soundSetFn: _jaSoundSet,
@@ -351,11 +414,24 @@ class AppStrings {
     premiumPlanLabel: 'Premiumプラン',
     premiumPlanVolumeDesc: 'お好みの音量に調整できます。設定した音量でアラームが鳴ります。',
     volumePreviewNote: '※ 試聴はデバイスの現在の音量で再生されます。',
+    badgeNames: {
+      'sprout': '芽生え',
+      'startDash': 'スタートダッシュ',
+      'routine': 'ルーティン',
+      'master': 'マスター',
+      'legend': 'レジェンド',
+    },
+    badgesTitle: '達成バッジ',
+    badgeUnlockConditionFn: _jaBadgeUnlockCondition,
+    badgeEarnedTitle: 'おめでとう！',
+    badgeEarnedBodyFn: _jaBadgeEarnedBody,
+    badgeShareTextFn: _jaBadgeShareText,
+    unlockedAtFn: _jaUnlockedAt,
     selectLanguageTitle: '言語を選択 / Select Language',
   );
 
   static final en = AppStrings._(
-    appTitle: 'Morning Forced Alarm',
+    appTitle: 'ForcedWake Alarm',
     missionNames: {
       'squat': 'Squats',
       'pushUp': 'Push-ups',
@@ -378,6 +454,10 @@ class AppStrings {
     doNotCloseApp: 'Please do not close the app',
     cancel: 'Cancel',
     done: 'Done',
+    nowLabel: 'Now',
+    alarmNotInBackground: 'The alarm will not ring in the background',
+    exerciseModeration:
+        "Set a manageable number — just enough to wake you up.\nOverdoing it first thing in the morning isn't good for you.",
     missionInfoSquat:
         'Do squats in front of the camera.\n\nPlace your phone so your full body is visible. Each knee bend is counted as one rep.',
     missionInfoPushUp:
@@ -407,12 +487,15 @@ class AppStrings {
     detectionTrouble: 'Detection not working?',
     quitToday: 'Quit for today',
     skipDetectionTitle: 'Skip detection?',
-    skipDetectionBody:
+    skipDetectionBodyWorkout:
+        "If you're exercising but detection isn't working, you can mark today as complete.",
+    skipDetectionBodyStudy:
         "If you have the book or pen ready but detection isn't working, you can mark today as complete.",
     back: 'Back',
     markComplete: 'Mark Complete',
     reallyQuitTitle: 'Are you sure?',
-    reallyQuitBody: 'The alarm will stop and you will return to the home screen.',
+    reallyQuitBody:
+        'The alarm will stop and you will return to the home screen.',
     continueBtn: 'Continue',
     quitBtn: 'Quit',
     goodMorning: 'Good morning!',
@@ -421,6 +504,10 @@ class AppStrings {
     share: 'Share',
     backToHome: 'Back to Home',
     shareTextFn: _enShareText,
+    shareEditTitle: 'Edit Share Message',
+    shareEditHint: 'Enter a message to share...',
+    missionFailed: 'Mission Incomplete',
+    tryAgainTomorrow: 'Try again tomorrow!',
     unlockAll: 'Unlock all features',
     premiumFeatures: [
       'Burpees, Reading & Study missions',
@@ -453,6 +540,9 @@ class AppStrings {
     volumeMin: 'Low',
     volumeMax: 'High',
     alarmAtMaxVolume: 'Alarm plays at max volume',
+    alarmAtMaxVolumePrefix: 'Alarm plays at ',
+    alarmAtMaxVolumeHighlight: 'max volume',
+    alarmAtMaxVolumeSuffix: '',
     selectAlarmSound: 'Select Alarm Sound',
     selectFromDevice: 'Select from Device',
     soundSetFn: _enSoundSet,
@@ -465,6 +555,19 @@ class AppStrings {
     premiumPlanVolumeDesc:
         'Adjust the volume to your preference. The alarm plays at your set volume.',
     volumePreviewNote: '* Preview plays at your current device volume.',
+    badgeNames: {
+      'sprout': 'Sprout',
+      'startDash': 'Start Dash',
+      'routine': 'Routine',
+      'master': 'Master',
+      'legend': 'Legend',
+    },
+    badgesTitle: 'Achievement Badges',
+    badgeUnlockConditionFn: _enBadgeUnlockCondition,
+    badgeEarnedTitle: 'Congratulations!',
+    badgeEarnedBodyFn: _enBadgeEarnedBody,
+    badgeShareTextFn: _enBadgeShareText,
+    unlockedAtFn: _enUnlockedAt,
     selectLanguageTitle: '言語を選択 / Select Language',
   );
 
@@ -477,11 +580,16 @@ class AppStrings {
   static String _jaRemainingReps(int n) => '残り $n 回';
   static String _jaStreakDays(int n) => '$n日連続';
   static String _jaShareText(int streak) =>
-      '朝型強制変換アラームで$streak日連続起床達成！\n運動しないと止まらないアラームで朝型生活を継続中';
+      'モーニングルーティン強制アラームで$streak日連続起床達成！運動しないと止まらないアラームで朝活を継続中！';
   static String _jaPurchaseFailed(String e) => '購入に失敗しました';
   static String _jaDays(int n) => '$n日';
   static String _jaTimes(int n) => '$n回';
   static String _jaSoundSet(String name) => '$name を設定しました';
+  static String _jaBadgeUnlockCondition(int days) => '$days日連続で解放';
+  static String _jaBadgeEarnedBody(String name) => '「$name」バッジを獲得しました！';
+  static String _jaBadgeShareText(String name, int streak) =>
+      'モーニングルーティン強制アラームで「$name」バッジを獲得！$streak日連続起床達成！';
+  static String _jaUnlockedAt(String date) => '$date 獲得';
 
   // --- English dynamic strings ---
   static String _enAlarmReading(int sec) =>
@@ -494,11 +602,18 @@ class AppStrings {
   static String _enRemainingReps(int n) => '$n reps left';
   static String _enStreakDays(int n) => '$n-day streak';
   static String _enShareText(int streak) =>
-      "I've woken up $streak days in a row with Morning Forced Alarm! An alarm that won't stop until you exercise.";
+      "I've woken up $streak days in a row with ForcedWake Alarm! An alarm that won't stop until you exercise.";
   static String _enPurchaseFailed(String e) => 'Purchase failed';
   static String _enDays(int n) => '$n days';
   static String _enTimes(int n) => '$n times';
   static String _enSoundSet(String name) => '$name has been set';
+  static String _enBadgeUnlockCondition(int days) =>
+      'Unlocks at $days-day streak';
+  static String _enBadgeEarnedBody(String name) =>
+      'You earned the "$name" badge!';
+  static String _enBadgeShareText(String name, int streak) =>
+      'I earned the "$name" badge on ForcedWake Alarm! $streak-day streak!';
+  static String _enUnlockedAt(String date) => 'Earned $date';
 
   String missionInfo(String id) {
     switch (id) {

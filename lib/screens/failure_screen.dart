@@ -7,16 +7,16 @@ import '../state/alarm_state.dart';
 import '../state/language_state.dart';
 import '../theme/app_colors.dart';
 
-class CompletionScreen extends StatefulWidget {
+class FailureScreen extends StatefulWidget {
   final StatisticsService statisticsService;
 
-  const CompletionScreen({super.key, required this.statisticsService});
+  const FailureScreen({super.key, required this.statisticsService});
 
   @override
-  State<CompletionScreen> createState() => _CompletionScreenState();
+  State<FailureScreen> createState() => _FailureScreenState();
 }
 
-class _CompletionScreenState extends State<CompletionScreen>
+class _FailureScreenState extends State<FailureScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -48,10 +48,10 @@ class _CompletionScreenState extends State<CompletionScreen>
     );
 
     _controller.forward();
-    _logAndCheckStreak();
+    _logFailure();
   }
 
-  Future<void> _logAndCheckStreak() async {
+  Future<void> _logFailure() async {
     final alarmState = context.read<AlarmState>();
     final triggeredAt = alarmState.alarmTriggeredAt;
     final durationSeconds = triggeredAt != null
@@ -60,7 +60,7 @@ class _CompletionScreenState extends State<CompletionScreen>
 
     await widget.statisticsService.logResult(
       missionId: alarmState.settings.missionTypeId,
-      result: 'success',
+      result: 'failure',
       target: alarmState.targetCount,
       achieved: alarmState.completedCount,
       durationSeconds: durationSeconds,
@@ -102,8 +102,8 @@ class _CompletionScreenState extends State<CompletionScreen>
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: const Icon(
-                    Icons.wb_sunny,
-                    color: AppColors.gold,
+                    Icons.nights_stay,
+                    color: AppColors.textSecondary,
                     size: 100,
                   ),
                 ),
@@ -113,7 +113,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                   child: Column(
                     children: [
                       Text(
-                        s.goodMorning,
+                        s.missionFailed,
                         style: const TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 28,
@@ -122,7 +122,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        s.haveANiceDay,
+                        s.tryAgainTomorrow,
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 16,
@@ -168,8 +168,8 @@ class _CompletionScreenState extends State<CompletionScreen>
                         height: 48,
                         child: OutlinedButton.icon(
                           onPressed: _shareAchievement,
-                          icon:
-                              const Icon(Icons.share, color: AppColors.accent),
+                          icon: const Icon(Icons.share,
+                              color: AppColors.accent),
                           label: Text(
                             s.share,
                             style: const TextStyle(color: AppColors.accent),

@@ -155,9 +155,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
           ? originalName.substring(0, originalName.lastIndexOf('.'))
           : originalName;
 
-      final ext = originalName.contains('.')
-          ? '.${originalName.split('.').last}'
-          : '';
+      final ext =
+          originalName.contains('.') ? '.${originalName.split('.').last}' : '';
       final safeName =
           'custom_alarm_${DateTime.now().millisecondsSinceEpoch}$ext';
 
@@ -221,7 +220,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
             const SizedBox(height: 4),
             Text(
               s.freePlanVolumeDesc,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style:
+                  const TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
             Text(
@@ -234,7 +234,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
             const SizedBox(height: 4),
             Text(
               s.premiumPlanVolumeDesc,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style:
+                  const TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 12),
             Text(
@@ -246,8 +247,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK',
-                style: TextStyle(color: AppColors.accent)),
+            child: const Text('OK', style: TextStyle(color: AppColors.accent)),
           ),
         ],
       ),
@@ -268,8 +268,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title:
-            Text(s.alarmSound, style: const TextStyle(color: AppColors.textPrimary)),
+        title: Text(s.alarmSound,
+            style: const TextStyle(color: AppColors.textPrimary)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
@@ -292,7 +292,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                   children: [
                     Text(
                       s.volume,
-                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
+                      style: const TextStyle(
+                          color: AppColors.textPrimary, fontSize: 16),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
@@ -311,8 +312,11 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                         ),
                         child: const Text(
                           'Premium',
-                          style:
-                              TextStyle(color: AppColors.textPrimary, fontSize: 10),
+                          style: TextStyle(
+                            color: AppColors.gold,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                     ],
@@ -332,9 +336,11 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(s.volumeMin,
-                          style: const TextStyle(color: AppColors.textSecondary)),
+                          style:
+                              const TextStyle(color: AppColors.textSecondary)),
                       Text(s.volumeMax,
-                          style: const TextStyle(color: AppColors.textSecondary)),
+                          style:
+                              const TextStyle(color: AppColors.textSecondary)),
                     ],
                   ),
                 ] else ...[
@@ -347,9 +353,22 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                     inactiveColor: AppColors.textHint,
                     onChanged: null,
                   ),
-                  Text(
-                    s.alarmAtMaxVolume,
-                    style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                          color: AppColors.textHint, fontSize: 12),
+                      children: [
+                        TextSpan(text: s.alarmAtMaxVolumePrefix),
+                        TextSpan(
+                          text: s.alarmAtMaxVolumeHighlight,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(text: s.alarmAtMaxVolumeSuffix),
+                      ],
+                    ),
                   ),
                 ],
               ],
@@ -382,14 +401,10 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.selected
-                        : AppColors.surface,
+                    color: isSelected ? AppColors.selected : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected
-                          ? AppColors.accent
-                          : Colors.transparent,
+                      color: isSelected ? AppColors.accent : Colors.transparent,
                       width: 2,
                     ),
                   ),
@@ -407,8 +422,9 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                       Text(
                         s.soundName(sound.id),
                         style: TextStyle(
-                          color:
-                              isLocked ? AppColors.textHint : AppColors.textPrimary,
+                          color: isLocked
+                              ? AppColors.textHint
+                              : AppColors.textPrimary,
                         ),
                       ),
                       if (isLocked) ...[
@@ -476,14 +492,13 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                           style: TextStyle(
                             color: !isPremium
                                 ? AppColors.textSecondary
-                                : Colors.white,
+                                : AppColors.textPrimary,
                           ),
                         ),
                         if (selectedSoundId == 'custom' &&
                             customSoundPath != null)
                           Text(
-                            customSoundName ??
-                                customSoundPath.split('/').last,
+                            customSoundName ?? customSoundPath.split('/').last,
                             style: const TextStyle(
                                 color: AppColors.textHint, fontSize: 12),
                             overflow: TextOverflow.ellipsis,
@@ -494,19 +509,17 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                   if (!isPremium)
                     const Icon(Icons.lock, color: AppColors.textHint, size: 16),
                   if (isPremium)
-                    const Icon(Icons.folder_open, color: AppColors.textSecondary),
+                    const Icon(Icons.folder_open,
+                        color: AppColors.textSecondary),
                   if (selectedSoundId == 'custom' &&
                       customSoundPath != null) ...[
                     const SizedBox(width: 8),
                     IconButton(
                       icon: Icon(
-                        _playingId == 'custom'
-                            ? Icons.stop
-                            : Icons.play_arrow,
+                        _playingId == 'custom' ? Icons.stop : Icons.play_arrow,
                         color: AppColors.textSecondary,
                       ),
-                      onPressed: () =>
-                          _playCustomPreview(customSoundPath),
+                      onPressed: () => _playCustomPreview(customSoundPath),
                     ),
                   ],
                 ],

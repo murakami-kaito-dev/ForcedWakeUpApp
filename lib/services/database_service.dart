@@ -33,8 +33,32 @@ class DatabaseService {
         await db.execute(
           'CREATE INDEX idx_mission_log_date ON mission_log(date)',
         );
+        await db.execute('''
+          CREATE TABLE badges (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            badge_type TEXT NOT NULL UNIQUE,
+            unlocked_at TEXT NOT NULL
+          )
+        ''');
       },
     );
+  }
+
+  Future<void> insertBadge(String badgeType) async {
+    final db = await database;
+    await db.insert(
+      'badges',
+      {
+        'badge_type': badgeType,
+        'unlocked_at': DateTime.now().toIso8601String(),
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getUnlockedBadges() async {
+    final db = await database;
+    return await db.query('badges', orderBy: 'unlocked_at ASC');
   }
 
   Future<int> insertLog(MissionLog log) async {

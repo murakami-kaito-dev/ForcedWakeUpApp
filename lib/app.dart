@@ -6,6 +6,7 @@ import 'screens/sleep_screen.dart';
 import 'screens/alarm_screen.dart';
 import 'screens/exercise_screen.dart';
 import 'screens/completion_screen.dart';
+import 'screens/failure_screen.dart';
 import 'screens/paywall_screen.dart';
 import 'screens/statistics_screen.dart';
 import 'screens/sound_selection_screen.dart';
@@ -42,6 +43,8 @@ class ForcedWakeUpApp extends StatelessWidget {
         '/exercise': (context) => const ExerciseScreen(),
         '/completion': (context) =>
             CompletionScreen(statisticsService: statisticsService),
+        '/failure': (context) =>
+            FailureScreen(statisticsService: statisticsService),
         '/paywall': (context) => const PaywallScreen(),
         '/statistics': (context) =>
             StatisticsScreen(statisticsService: statisticsService),

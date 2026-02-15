@@ -232,7 +232,7 @@ class _PlanCard extends StatelessWidget {
                       child: Text(
                         recommendedLabel,
                         style: const TextStyle(
-                            color: AppColors.textPrimary, fontSize: 10),
+                            color: AppColors.surface, fontSize: 10),
                       ),
                     ),
                   Text(

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../models/badge_type.dart';
 import '../models/mission_type.dart';
+import '../services/badge_service.dart';
 import '../services/statistics_service.dart';
 import '../state/language_state.dart';
+import '../state/premium_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/badge_earned_dialog.dart';
+import '../widgets/badge_widget.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -46,6 +51,95 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       _missionBreakdown = results[3] as Map<String, int>;
       _successDates = results[4] as Set<DateTime>;
     });
+
+    if (!mounted) return;
+    final isPremium = context.read<PremiumState>().isPremium;
+    if (!isPremium) return;
+
+    final badgeService = context.read<BadgeService>();
+    await badgeService.loadBadges();
+    final newBadges = await badgeService.checkAndUnlockBadges(_bestStreak);
+    if (newBadges.isNotEmpty && mounted) {
+      final s = context.read<LanguageState>().strings;
+      for (final badge in newBadges) {
+        await showDialog(
+          context: context,
+          builder: (_) => BadgeEarnedDialog(
+            badge: badge,
+            streak: _bestStreak,
+            strings: s,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildBadgeSection(dynamic s) {
+    final badgeService = context.watch<BadgeService>();
+    final unlocked = badgeService.unlockedBadges;
+    final unlockDates = badgeService.unlockDates;
+    final latestBadge = unlocked.isNotEmpty ? unlocked.last : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          s.badgesTitle,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: BadgeType.values.map((badge) {
+              final isUnlocked = unlocked.contains(badge);
+              final isLatest = badge == latestBadge;
+              final unlockDate = unlockDates[badge];
+              return Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Column(
+                  children: [
+                    BadgeWidget(
+                      badge: badge,
+                      unlocked: isUnlocked,
+                      isLatest: isLatest,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      isUnlocked
+                          ? s.badgeName(badge.name)
+                          : s.badgeUnlockCondition(badge.requiredStreak),
+                      style: TextStyle(
+                        color: isUnlocked
+                            ? AppColors.textPrimary
+                            : AppColors.textHint,
+                        fontSize: 11,
+                        fontWeight:
+                            isUnlocked ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    if (isUnlocked && unlockDate != null)
+                      Text(
+                        s.unlockedAt(
+                          '${unlockDate.month}/${unlockDate.day}',
+                        ),
+                        style: const TextStyle(
+                          color: AppColors.textHint,
+                          fontSize: 10,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -118,6 +212,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
               ],
             ),
+            if (context.watch<PremiumState>().isPremium) ...[
+              const SizedBox(height: 24),
+              _buildBadgeSection(s),
+            ],
             const SizedBox(height: 24),
             // Calendar
             Text(
