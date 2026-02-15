@@ -6,6 +6,7 @@ import '../services/audio_service.dart';
 import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
+import '../theme/app_colors.dart';
 
 class AlarmScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -92,7 +93,7 @@ class _AlarmScreenState extends State<AlarmScreen>
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.background,
         body: SafeArea(
           child: Center(
             child: Column(
@@ -110,7 +111,7 @@ class _AlarmScreenState extends State<AlarmScreen>
                 Text(
                   s.wakeUpTime,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -122,7 +123,7 @@ class _AlarmScreenState extends State<AlarmScreen>
                     instructionText,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.white70,
+                      color: AppColors.textSecondary,
                       fontSize: 16,
                     ),
                   ),
@@ -136,7 +137,7 @@ class _AlarmScreenState extends State<AlarmScreen>
                       Navigator.pushReplacementNamed(context, '/exercise');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF533483),
+                      backgroundColor: AppColors.accent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -146,7 +147,7 @@ class _AlarmScreenState extends State<AlarmScreen>
                           ? s.startExercise
                           : s.start,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -156,13 +157,13 @@ class _AlarmScreenState extends State<AlarmScreen>
                 const SizedBox(height: 24),
                 Text(
                   s.brightPlace,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  style: const TextStyle(color: AppColors.textHint, fontSize: 12),
                 ),
                 if (mission.category == MissionCategory.workout) ...[
                   const SizedBox(height: 8),
                   Text(
                     s.recommendStand,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    style: const TextStyle(color: AppColors.textHint, fontSize: 12),
                   ),
                 ],
               ],

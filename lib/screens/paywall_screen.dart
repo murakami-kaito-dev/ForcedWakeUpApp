@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
 enum _Plan { yearly, monthly }
 
@@ -49,19 +50,18 @@ class _PaywallScreenState extends State<PaywallScreen> {
             ? ((1 - yearlyRaw / (monthlyRaw * 12)) * 100).round()
             : 0;
     // Monthly equivalent from yearly price
-    final monthlyEquiv = (yearlyRaw != null)
-        ? (yearlyRaw / 12).toStringAsFixed(0)
-        : '---';
+    final monthlyEquiv =
+        (yearlyRaw != null) ? (yearlyRaw / 12).toStringAsFixed(0) : '---';
     final currencySymbol = premiumState.currencySymbol ?? '';
     final monthlyEquivLabel = '$currencySymbol$monthlyEquiv';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -71,12 +71,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
           child: Column(
             children: [
               const SizedBox(height: 16),
-              const Icon(Icons.star, color: Color(0xFFFFD700), size: 64),
+              const Icon(Icons.star, color: AppColors.gold, size: 64),
               const SizedBox(height: 16),
               const Text(
                 'Premium',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
@@ -84,7 +84,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               const SizedBox(height: 8),
               Text(
                 s.unlockAll,
-                style: TextStyle(color: Colors.grey[400], fontSize: 16),
+                style: const TextStyle(color: AppColors.textHint, fontSize: 16),
               ),
               const SizedBox(height: 32),
               // Features list
@@ -93,11 +93,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     child: Row(
                       children: [
                         const Icon(Icons.check_circle,
-                            color: Color(0xFF533483), size: 20),
+                            color: AppColors.accent, size: 20),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(f,
-                              style: const TextStyle(color: Colors.white70)),
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary)),
                         ),
                       ],
                     ),
@@ -111,8 +112,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ? '$currencySymbol${(monthlyRaw * 12).toStringAsFixed(0)}'
                     : null,
                 savingsPercent: savingsPercent > 0 ? savingsPercent : null,
-                subtitle:
-                    s.yearlySubtitle(monthlyEquivLabel, savingsPercent),
+                subtitle: s.yearlySubtitle(monthlyEquivLabel, savingsPercent),
                 isSelected: _selectedPlan == _Plan.yearly,
                 recommendedLabel: s.recommended,
                 onTap: () => setState(() => _selectedPlan = _Plan.yearly),
@@ -135,7 +135,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 child: ElevatedButton(
                   onPressed: _purchase,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF533483),
+                    backgroundColor: AppColors.accent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -143,7 +143,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   child: Text(
                     s.subscribe,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -160,7 +160,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 },
                 child: Text(
                   s.restorePurchase,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                  style:
+                      const TextStyle(color: AppColors.textHint, fontSize: 14),
                 ),
               ),
               const SizedBox(height: 24),
@@ -201,26 +202,18 @@ class _PlanCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF0F3460)
-              : const Color(0xFF16213E),
+          color: isSelected ? AppColors.selected : AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF533483)
-                : Colors.transparent,
+            color: isSelected ? AppColors.accent : Colors.transparent,
             width: 2,
           ),
         ),
         child: Row(
           children: [
             Icon(
-              isSelected
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_off,
-              color: isSelected
-                  ? const Color(0xFF533483)
-                  : Colors.grey[600],
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected ? AppColors.accent : AppColors.textSecondary,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -233,19 +226,19 @@ class _PlanCard extends StatelessWidget {
                           horizontal: 8, vertical: 2),
                       margin: const EdgeInsets.only(bottom: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF533483),
+                        color: AppColors.accent,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         recommendedLabel,
                         style: const TextStyle(
-                            color: Colors.white, fontSize: 10),
+                            color: AppColors.textPrimary, fontSize: 10),
                       ),
                     ),
                   Text(
                     title,
-                    style:
-                        const TextStyle(color: Colors.white70, fontSize: 14),
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 14),
                   ),
                   const SizedBox(height: 2),
                   if (originalPrice != null && savingsPercent != null) ...[
@@ -253,11 +246,11 @@ class _PlanCard extends StatelessWidget {
                       children: [
                         Text(
                           originalPrice!,
-                          style: TextStyle(
-                            color: Colors.grey[500],
+                          style: const TextStyle(
+                            color: AppColors.textHint,
                             fontSize: 14,
                             decoration: TextDecoration.lineThrough,
-                            decorationColor: Colors.grey[500],
+                            decorationColor: AppColors.textHint,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -271,7 +264,7 @@ class _PlanCard extends StatelessWidget {
                           child: Text(
                             '-$savingsPercent%',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -284,7 +277,7 @@ class _PlanCard extends StatelessWidget {
                   Text(
                     price,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -294,8 +287,8 @@ class _PlanCard extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
                         subtitle,
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 11),
+                        style: const TextStyle(
+                            color: AppColors.textHint, fontSize: 11),
                       ),
                     ),
                 ],

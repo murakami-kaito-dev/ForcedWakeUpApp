@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'theme/app_colors.dart';
 import 'screens/home_screen.dart';
 import 'screens/sleep_screen.dart';
 import 'screens/alarm_screen.dart';
@@ -23,13 +24,13 @@ class ForcedWakeUpApp extends StatelessWidget {
       title: s.appTitle,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: const Color(0xFF533483),
-        scaffoldBackgroundColor: const Color(0xFF1A1A2E),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF533483),
-          secondary: Color(0xFF0F3460),
-          surface: Color(0xFF16213E),
+        brightness: Brightness.light,
+        primaryColor: AppColors.accent,
+        scaffoldBackgroundColor: AppColors.background,
+        colorScheme: const ColorScheme.light(
+          primary: AppColors.accent,
+          secondary: AppColors.selected,
+          surface: AppColors.surface,
         ),
       ),
       initialRoute: '/',

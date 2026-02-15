@@ -11,6 +11,7 @@ import '../models/alarm_sound.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
 class SoundSelectionScreen extends StatefulWidget {
   const SoundSelectionScreen({super.key});
@@ -198,13 +199,13 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF16213E),
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
           s.volumeInfoTitle,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 18),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -213,32 +214,32 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
             Text(
               s.freePlanLabel,
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               s.freePlanVolumeDesc,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 16),
             Text(
               s.premiumPlanLabel,
               style: const TextStyle(
-                color: Color(0xFFFFD700),
+                color: AppColors.gold,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               s.premiumPlanVolumeDesc,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 12),
             Text(
               s.volumePreviewNote,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              style: const TextStyle(color: AppColors.textHint, fontSize: 12),
             ),
           ],
         ),
@@ -246,7 +247,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK',
-                style: TextStyle(color: Color(0xFF533483))),
+                style: TextStyle(color: AppColors.accent)),
           ),
         ],
       ),
@@ -263,14 +264,14 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
     final customSoundName = alarmState.settings.customSoundName;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title:
-            Text(s.alarmSound, style: const TextStyle(color: Colors.white)),
+            Text(s.alarmSound, style: const TextStyle(color: AppColors.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -281,7 +282,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF16213E),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -291,13 +292,13 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                   children: [
                     Text(
                       s.volume,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: _showVolumeInfo,
-                      child: Icon(Icons.info_outline,
-                          color: Colors.grey[500], size: 18),
+                      child: const Icon(Icons.info_outline,
+                          color: AppColors.textHint, size: 18),
                     ),
                     if (!isPremium) ...[
                       const SizedBox(width: 8),
@@ -305,13 +306,13 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF533483),
+                          color: AppColors.accent,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
                           'Premium',
                           style:
-                              TextStyle(color: Colors.white, fontSize: 10),
+                              TextStyle(color: AppColors.textPrimary, fontSize: 10),
                         ),
                       ),
                     ],
@@ -323,32 +324,32 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                     value: _deviceVolume.clamp(0.0, 1.0),
                     min: 0.0,
                     max: 1.0,
-                    activeColor: const Color(0xFF533483),
-                    inactiveColor: Colors.white24,
+                    activeColor: AppColors.accent,
+                    inactiveColor: AppColors.textHint,
                     onChanged: _onVolumeChanged,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(s.volumeMin,
-                          style: TextStyle(color: Colors.grey[600])),
+                          style: const TextStyle(color: AppColors.textSecondary)),
                       Text(s.volumeMax,
-                          style: TextStyle(color: Colors.grey[600])),
+                          style: const TextStyle(color: AppColors.textSecondary)),
                     ],
                   ),
                 ] else ...[
                   // Free plan: show max volume indicator
-                  Slider(
+                  const Slider(
                     value: 1.0,
                     min: 0.0,
                     max: 1.0,
-                    activeColor: Colors.grey[700],
-                    inactiveColor: Colors.white24,
+                    activeColor: AppColors.textHint,
+                    inactiveColor: AppColors.textHint,
                     onChanged: null,
                   ),
                   Text(
                     s.alarmAtMaxVolume,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    style: const TextStyle(color: AppColors.textHint, fontSize: 12),
                   ),
                 ],
               ],
@@ -358,7 +359,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
           Text(
             s.selectAlarmSound,
             style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold),
           ),
@@ -382,12 +383,12 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFF0F3460)
-                        : const Color(0xFF16213E),
+                        ? AppColors.selected
+                        : AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF533483)
+                          ? AppColors.accent
                           : Colors.transparent,
                       width: 2,
                     ),
@@ -399,21 +400,21 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                             ? Icons.radio_button_checked
                             : Icons.radio_button_off,
                         color: isSelected
-                            ? const Color(0xFF533483)
-                            : Colors.grey[600],
+                            ? AppColors.accent
+                            : AppColors.textSecondary,
                       ),
                       const SizedBox(width: 12),
                       Text(
                         s.soundName(sound.id),
                         style: TextStyle(
                           color:
-                              isLocked ? Colors.grey[600] : Colors.white,
+                              isLocked ? AppColors.textHint : AppColors.textPrimary,
                         ),
                       ),
                       if (isLocked) ...[
                         const SizedBox(width: 8),
                         const Icon(Icons.lock,
-                            color: Colors.grey, size: 16),
+                            color: AppColors.textHint, size: 16),
                       ],
                       const Spacer(),
                       IconButton(
@@ -421,7 +422,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                           _playingId == sound.id
                               ? Icons.stop
                               : Icons.play_arrow,
-                          color: Colors.white70,
+                          color: AppColors.textSecondary,
                         ),
                         onPressed: () => _playPreview(sound),
                       ),
@@ -445,12 +446,12 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: selectedSoundId == 'custom'
-                    ? const Color(0xFF0F3460)
-                    : const Color(0xFF16213E),
+                    ? AppColors.selected
+                    : AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: selectedSoundId == 'custom'
-                      ? const Color(0xFF533483)
+                      ? AppColors.accent
                       : Colors.transparent,
                   width: 2,
                 ),
@@ -462,8 +463,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                         ? Icons.radio_button_checked
                         : Icons.radio_button_off,
                     color: selectedSoundId == 'custom'
-                        ? const Color(0xFF533483)
-                        : Colors.grey[600],
+                        ? AppColors.accent
+                        : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -474,7 +475,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                           s.selectFromDevice,
                           style: TextStyle(
                             color: !isPremium
-                                ? Colors.grey[600]
+                                ? AppColors.textSecondary
                                 : Colors.white,
                           ),
                         ),
@@ -483,17 +484,17 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                           Text(
                             customSoundName ??
                                 customSoundPath.split('/').last,
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 12),
+                            style: const TextStyle(
+                                color: AppColors.textHint, fontSize: 12),
                             overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),
                   ),
                   if (!isPremium)
-                    const Icon(Icons.lock, color: Colors.grey, size: 16),
+                    const Icon(Icons.lock, color: AppColors.textHint, size: 16),
                   if (isPremium)
-                    const Icon(Icons.folder_open, color: Colors.white70),
+                    const Icon(Icons.folder_open, color: AppColors.textSecondary),
                   if (selectedSoundId == 'custom' &&
                       customSoundPath != null) ...[
                     const SizedBox(width: 8),
@@ -502,7 +503,7 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                         _playingId == 'custom'
                             ? Icons.stop
                             : Icons.play_arrow,
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                       ),
                       onPressed: () =>
                           _playCustomPreview(customSoundPath),

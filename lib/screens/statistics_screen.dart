@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../models/mission_type.dart';
 import '../services/statistics_service.dart';
 import '../state/language_state.dart';
+import '../theme/app_colors.dart';
 
 class StatisticsScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -57,14 +58,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         : 0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(s.statistics,
-            style: const TextStyle(color: Colors.white)),
+            style: const TextStyle(color: AppColors.textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -90,7 +91,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     label: s.bestStreak,
                     value: s.daysSuffix(_bestStreak),
                     icon: Icons.emoji_events,
-                    color: const Color(0xFFFFD700),
+                    color: AppColors.gold,
                   ),
                 ),
               ],
@@ -122,14 +123,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Text(
               s.calendar,
               style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: TableCalendar(
@@ -142,28 +143,28 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   formatButtonVisible: false,
                   titleCentered: true,
                   titleTextStyle:
-                      TextStyle(color: Colors.white, fontSize: 16),
+                      TextStyle(color: AppColors.textPrimary, fontSize: 16),
                   leftChevronIcon:
-                      Icon(Icons.chevron_left, color: Colors.white),
+                      Icon(Icons.chevron_left, color: AppColors.textSecondary),
                   rightChevronIcon:
-                      Icon(Icons.chevron_right, color: Colors.white),
+                      Icon(Icons.chevron_right, color: AppColors.textSecondary),
                 ),
                 daysOfWeekStyle: const DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(color: Colors.white54),
-                  weekendStyle: TextStyle(color: Colors.white54),
+                  weekdayStyle: TextStyle(color: AppColors.textHint),
+                  weekendStyle: TextStyle(color: AppColors.textHint),
                 ),
-                calendarStyle: CalendarStyle(
+                calendarStyle: const CalendarStyle(
                   defaultTextStyle:
-                      const TextStyle(color: Colors.white70),
+                      TextStyle(color: AppColors.textSecondary),
                   weekendTextStyle:
-                      const TextStyle(color: Colors.white70),
-                  outsideTextStyle: TextStyle(color: Colors.grey[800]),
-                  todayDecoration: const BoxDecoration(
-                    color: Colors.white24,
+                      TextStyle(color: AppColors.textSecondary),
+                  outsideTextStyle: TextStyle(color: AppColors.textHint),
+                  todayDecoration: BoxDecoration(
+                    color: AppColors.selected,
                     shape: BoxShape.circle,
                   ),
-                  markerDecoration: const BoxDecoration(
-                    color: Color(0xFF533483),
+                  markerDecoration: BoxDecoration(
+                    color: AppColors.accent,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -185,7 +186,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Text(
                 s.missionBreakdown,
                 style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
               ),
@@ -197,24 +198,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF16213E),
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
                         Icon(mission.icon,
-                            color: Colors.white70, size: 24),
+                            color: AppColors.textSecondary, size: 24),
                         const SizedBox(width: 12),
                         Text(
                           s.missionName(mission.id),
                           style:
-                              const TextStyle(color: Colors.white),
+                              const TextStyle(color: AppColors.textPrimary),
                         ),
                         const Spacer(),
                         Text(
                           s.timesSuffix(entry.value),
                           style: const TextStyle(
-                            color: Color(0xFF533483),
+                            color: AppColors.accent,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -250,7 +251,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -261,13 +262,13 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(label,
-              style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+              style: const TextStyle(color: AppColors.textHint, fontSize: 12)),
         ],
       ),
     );

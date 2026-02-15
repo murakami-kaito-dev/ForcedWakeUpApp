@@ -312,7 +312,6 @@ class AppStrings {
     unlockAll: '全ての機能をアンロック',
     premiumFeatures: [
       'バーピー・読書・勉強ミッション',
-      '回数・秒数のカスタマイズ',
       'アラーム音の選択',
       '音量調整',
       '達成統計・連続記録',
@@ -425,7 +424,6 @@ class AppStrings {
     unlockAll: 'Unlock all features',
     premiumFeatures: [
       'Burpees, Reading & Study missions',
-      'Customize reps & duration',
       'Alarm sound selection',
       'Volume control',
       'Achievement stats & streaks',

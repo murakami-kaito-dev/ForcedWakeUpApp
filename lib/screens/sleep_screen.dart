@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
+import '../theme/app_colors.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -74,7 +75,7 @@ class _SleepScreenState extends State<SleepScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF16213E),
+        backgroundColor: AppColors.darkSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -112,7 +113,7 @@ class _SleepScreenState extends State<SleepScreen> {
     final s = context.watch<LanguageState>().strings;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.darkBackground,
       body: SafeArea(
         child: Stack(
           children: [

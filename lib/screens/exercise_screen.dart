@@ -16,6 +16,7 @@ import '../utils/exercise_detector.dart';
 import '../utils/study_detector.dart';
 import '../state/language_state.dart';
 import '../widgets/pose_painter.dart';
+import '../theme/app_colors.dart';
 
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({super.key});
@@ -417,7 +418,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     Text(
                       s.missionName(_mission.id),
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 16,
                       ),
                     ),
@@ -426,7 +427,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                       Text(
                         s.remainingSec(alarmState.remainingCount),
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
                         ),
@@ -451,7 +452,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                       Text(
                         s.remainingReps(alarmState.remainingCount),
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
                         ),
@@ -480,12 +481,12 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               child: Column(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.cameraswitch, color: Colors.white70, size: 28),
+                    icon: const Icon(Icons.cameraswitch, color: AppColors.textSecondary, size: 28),
                     onPressed: _switchCamera,
                   ),
                   const SizedBox(height: 4),
                   IconButton(
-                    icon: const Icon(Icons.refresh, color: Colors.white70, size: 28),
+                    icon: const Icon(Icons.refresh, color: AppColors.textSecondary, size: 28),
                     onPressed: _reloadCamera,
                   ),
                 ],
@@ -524,7 +525,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         minHeight: 8,
                         backgroundColor: Colors.white24,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF533483),
+                          AppColors.accent,
                         ),
                       ),
                     ),
@@ -532,7 +533,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     Text(
                       '${alarmState.completedCount} / ${alarmState.targetCount}',
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                       ),
                     ),
@@ -550,7 +551,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                           child: Text(
                             s.detectionTrouble,
                             style: const TextStyle(
-                              color: Colors.white70,
+                              color: AppColors.textSecondary,
                               fontSize: 12,
                             ),
                           ),

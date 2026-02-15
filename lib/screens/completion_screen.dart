@@ -6,6 +6,7 @@ import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
 class CompletionScreen extends StatefulWidget {
   final StatisticsService statisticsService;
@@ -97,7 +98,7 @@ class _CompletionScreenState extends State<CompletionScreen>
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.background,
         body: SafeArea(
           child: Center(
             child: Column(
@@ -107,7 +108,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                   scale: _scaleAnimation,
                   child: const Icon(
                     Icons.wb_sunny,
-                    color: Color(0xFFFFD700),
+                    color: AppColors.gold,
                     size: 100,
                   ),
                 ),
@@ -119,7 +120,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                       Text(
                         s.goodMorning,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
@@ -128,7 +129,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                       Text(
                         s.haveANiceDay,
                         style: const TextStyle(
-                          color: Colors.white70,
+                          color: AppColors.textSecondary,
                           fontSize: 16,
                         ),
                       ),
@@ -138,7 +139,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF16213E),
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
@@ -150,7 +151,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                               Text(
                                 s.streakDays(_currentStreak),
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.textPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -174,15 +175,15 @@ class _CompletionScreenState extends State<CompletionScreen>
                           child: OutlinedButton.icon(
                             onPressed: _shareAchievement,
                             icon: const Icon(Icons.share,
-                                color: Color(0xFF533483)),
+                                color: AppColors.accent),
                             label: Text(
                               s.share,
                               style:
-                                  const TextStyle(color: Color(0xFF533483)),
+                                  const TextStyle(color: AppColors.accent),
                             ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
-                                  color: Color(0xFF533483)),
+                                  color: AppColors.accent),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -200,7 +201,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                             Navigator.pushReplacementNamed(context, '/');
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF533483),
+                            backgroundColor: AppColors.accent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -208,7 +209,7 @@ class _CompletionScreenState extends State<CompletionScreen>
                           child: Text(
                             s.backToHome,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                               fontSize: 16,
                             ),
                           ),

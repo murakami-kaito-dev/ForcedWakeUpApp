@@ -5,6 +5,7 @@ import '../models/mission_type.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pop(ctx);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF533483),
+                  backgroundColor: AppColors.accent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -72,14 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pop(ctx);
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF533483)),
+                  side: const BorderSide(color: AppColors.accent),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: const Text('English',
-                    style: TextStyle(color: Color(0xFF533483), fontSize: 16)),
+                    style: TextStyle(color: AppColors.accent, fontSize: 16)),
               ),
             ),
           ],
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final selectedMission = alarmState.missionType;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -112,9 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text(
                       s.appTitle,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ),
@@ -122,12 +123,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.language,
-                            color: Colors.white70),
+                            color: AppColors.textSecondary),
                         onPressed: _showLanguageDialog,
                       ),
                       IconButton(
                         icon: const Icon(Icons.bar_chart,
-                            color: Colors.white70),
+                            color: AppColors.textSecondary),
                         onPressed: () {
                           if (!isPremium) {
                             Navigator.pushNamed(context, '/paywall');
@@ -138,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.music_note,
-                            color: Colors.white70),
+                            color: AppColors.textSecondary),
                         onPressed: () {
                           Navigator.pushNamed(context, '/sound-selection');
                         },
@@ -154,14 +155,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF16213E),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Center(
                     child: Text(
                       '${settings.alarmTime.hour.toString().padLeft(2, '0')}:${settings.alarmTime.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 64,
                         fontWeight: FontWeight.w300,
                         letterSpacing: 4,
@@ -177,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   s.morningMission,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -204,8 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF533483)
-                                : const Color(0xFF16213E),
+                                ? AppColors.accent
+                                : AppColors.surface,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(category.icon,
                                   color: isSelected
                                       ? Colors.white
-                                      : Colors.grey[600],
+                                      : AppColors.textSecondary,
                                   size: 18),
                               const SizedBox(width: 6),
                               Text(
@@ -222,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.white
-                                      : Colors.grey[600],
+                                      : AppColors.textSecondary,
                                   fontSize: 14,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
@@ -241,10 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
               // Mission list
               Expanded(
                 child: ListView(
-                  children: MissionType.byCategory(_selectedCategory)
-                      .map((mission) {
-                    final isSelected =
-                        settings.missionTypeId == mission.id;
+                  children:
+                      MissionType.byCategory(_selectedCategory).map((mission) {
+                    final isSelected = settings.missionTypeId == mission.id;
                     final isLocked = mission.isPremium && !isPremium;
 
                     return Padding(
@@ -261,12 +261,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF0F3460)
-                                : const Color(0xFF16213E),
+                                ? AppColors.selected
+                                : AppColors.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? const Color(0xFF533483)
+                                  ? AppColors.accent
                                   : Colors.transparent,
                               width: 2,
                             ),
@@ -276,10 +276,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(
                                 mission.icon,
                                 color: isLocked
-                                    ? Colors.grey[700]
-                                    : isSelected
-                                        ? Colors.white
-                                        : Colors.grey[500],
+                                    ? AppColors.textHint
+                                    : AppColors.accent,
                                 size: 28,
                               ),
                               const SizedBox(width: 16),
@@ -287,8 +285,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 s.missionName(mission.id),
                                 style: TextStyle(
                                   color: isLocked
-                                      ? Colors.grey[700]
-                                      : Colors.white,
+                                      ? AppColors.textHint
+                                      : AppColors.textPrimary,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -296,24 +294,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (isLocked) ...[
                                 const SizedBox(width: 8),
                                 const Icon(Icons.lock,
-                                    color: Colors.grey, size: 14),
+                                    color: AppColors.textHint, size: 14),
                               ],
                               if (mission.isPremium && isPremium) ...[
                                 const SizedBox(width: 8),
                                 const Icon(Icons.star,
-                                    color: Color(0xFFFFD700), size: 14),
+                                    color: AppColors.gold, size: 14),
                               ],
                               const SizedBox(width: 4),
                               GestureDetector(
                                 onTap: () =>
                                     _showMissionInfo(context, mission, s),
-                                child: Icon(Icons.info_outline,
-                                    color: Colors.grey[600], size: 18),
+                                child: const Icon(Icons.info_outline,
+                                    color: AppColors.textHint, size: 18),
                               ),
                               const Spacer(),
                               if (isSelected)
                                 const Icon(Icons.check_circle,
-                                    color: Color(0xFF533483)),
+                                    color: AppColors.accent),
                             ],
                           ),
                         ),
@@ -331,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF16213E),
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -339,22 +337,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           s.target,
-                          style: TextStyle(
-                              color: Colors.grey[400], fontSize: 14),
+                          style: const TextStyle(
+                              color: AppColors.textSecondary, fontSize: 14),
                         ),
                         Row(
                           children: [
                             Text(
                               '${settings.targetCount}${selectedMission.detectionMode == DetectionMode.repBased ? s.unitReps : s.unitSeconds}',
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textPrimary,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Icon(Icons.chevron_right,
-                                color: Colors.grey[600], size: 20),
+                            const Icon(Icons.chevron_right,
+                                color: AppColors.textHint, size: 20),
                           ],
                         ),
                       ],
@@ -371,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pushReplacementNamed(context, '/sleep');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF533483),
+                    backgroundColor: AppColors.accent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -389,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               Text(
                 s.doNotCloseApp,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                style: const TextStyle(color: AppColors.textHint, fontSize: 12),
               ),
               const SizedBox(height: 16),
             ],
@@ -399,8 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showMissionInfo(
-      BuildContext context, MissionType mission, dynamic s) {
+  void _showMissionInfo(BuildContext context, MissionType mission, dynamic s) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -410,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Row(
           children: [
-            Icon(mission.icon, color: const Color(0xFF533483), size: 24),
+            Icon(mission.icon, color: AppColors.accent, size: 24),
             const SizedBox(width: 8),
             Text(
               s.missionName(mission.id),
@@ -429,8 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK',
-                style: TextStyle(color: Color(0xFF533483))),
+            child: const Text('OK', style: TextStyle(color: AppColors.accent)),
           ),
         ],
       ),
@@ -449,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF16213E),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -467,12 +463,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(s.cancel,
-                          style: const TextStyle(color: Colors.grey)),
+                          style: const TextStyle(color: AppColors.textHint)),
                     ),
                     Text(
                       '${s.target} ($unit)',
                       style: const TextStyle(
-                          color: Colors.white70, fontSize: 14),
+                          color: AppColors.textSecondary, fontSize: 14),
                     ),
                     TextButton(
                       onPressed: () {
@@ -480,8 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                       },
                       child: Text(s.done,
-                          style:
-                              const TextStyle(color: Color(0xFF533483))),
+                          style: const TextStyle(color: AppColors.accent)),
                     ),
                   ],
                 ),
@@ -501,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                         '${min + index}',
                         style: const TextStyle(
-                            color: Colors.white, fontSize: 22),
+                            color: AppColors.textPrimary, fontSize: 22),
                       ),
                     ),
                   ),
@@ -514,15 +509,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showTimePicker(
-      BuildContext context, AlarmState alarmState, dynamic s) {
+  void _showTimePicker(BuildContext context, AlarmState alarmState, dynamic s) {
     final settings = alarmState.settings;
     int selectedHour = settings.alarmTime.hour;
     int selectedMinute = settings.alarmTime.minute;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF16213E),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -540,19 +534,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(s.cancel,
-                          style: const TextStyle(color: Colors.grey)),
+                          style: const TextStyle(color: AppColors.textHint)),
                     ),
                     TextButton(
                       onPressed: () {
                         alarmState.updateAlarmTime(
-                          TimeOfDay(
-                              hour: selectedHour, minute: selectedMinute),
+                          TimeOfDay(hour: selectedHour, minute: selectedMinute),
                         );
                         Navigator.pop(context);
                       },
                       child: Text(s.done,
-                          style:
-                              const TextStyle(color: Color(0xFF533483))),
+                          style: const TextStyle(color: AppColors.accent)),
                     ),
                   ],
                 ),
@@ -562,7 +554,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   mode: CupertinoDatePickerMode.time,
                   use24hFormat: true,
                   initialDateTime: DateTime(
-                    2024, 1, 1,
+                    2024,
+                    1,
+                    1,
                     settings.alarmTime.hour,
                     settings.alarmTime.minute,
                   ),
