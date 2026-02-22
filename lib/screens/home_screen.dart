@@ -1,57 +1,169 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/exercise_type.dart';
+import '../models/mission_type.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
+import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  MissionCategory _selectedCategory = MissionCategory.workout;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final langState = context.read<LanguageState>();
+      if (langState.isFirstLaunch) {
+        _showLanguageDialog();
+      }
+    });
+  }
+
+  void _showLanguageDialog() {
+    final langState = context.read<LanguageState>();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          '言語を選択 / Select Language',
+          style: TextStyle(fontSize: 18, color: Colors.black87),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  langState.setLanguage('ja');
+                  Navigator.pop(ctx);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('日本語',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  langState.setLanguage('en');
+                  Navigator.pop(ctx);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.accent),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text('English',
+                    style: TextStyle(color: AppColors.accent, fontSize: 16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
+    final isPremium = context.watch<PremiumState>().isPremium;
+    final s = context.watch<LanguageState>().strings;
     final settings = alarmState.settings;
+    final selectedMission = alarmState.missionType;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const SizedBox(height: 40),
-              const Text(
-                '朝型強制変換アラーム',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              const SizedBox(height: 24),
+              // Header with stats button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      s.appTitle,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.language,
+                            color: AppColors.textSecondary),
+                        onPressed: _showLanguageDialog,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.bar_chart,
+                            color: AppColors.textSecondary),
+                        onPressed: () {
+                          if (!isPremium) {
+                            Navigator.pushNamed(context, '/paywall');
+                            return;
+                          }
+                          Navigator.pushNamed(context, '/statistics');
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.music_note,
+                            color: AppColors.textSecondary),
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/sound-selection');
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                '筋トレしないと止まらない',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 12),
               // Alarm time picker
               GestureDetector(
-                onTap: () => _showTimePicker(context, alarmState),
+                onTap: () => _showTimePicker(context, alarmState, s),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF16213E),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Center(
                     child: Text(
                       '${settings.alarmTime.hour.toString().padLeft(2, '0')}:${settings.alarmTime.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 72,
+                        color: AppColors.textPrimary,
+                        fontSize: 64,
                         fontWeight: FontWeight.w300,
                         letterSpacing: 4,
                       ),
@@ -59,76 +171,117 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-              // Exercise type selector
-              const Align(
+              const SizedBox(height: 8),
+              // Quick time set buttons
+              Row(
+                children: [
+                  _QuickTimeButton(
+                    label: s.nowLabel,
+                    onTap: () {
+                      final now = DateTime.now();
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: now.hour, minute: now.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '+7h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .add(const Duration(hours: 7));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '+1h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .add(const Duration(hours: 1));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _QuickTimeButton(
+                    label: '-1h',
+                    onTap: () {
+                      final current = settings.alarmTime;
+                      final dt =
+                          DateTime(2024, 1, 1, current.hour, current.minute)
+                              .subtract(const Duration(hours: 1));
+                      alarmState.updateAlarmTime(
+                        TimeOfDay(hour: dt.hour, minute: dt.minute),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Morning Mission section header
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '解除種目',
-                  style: TextStyle(
-                    color: Colors.white70,
+                  s.morningMission,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               const SizedBox(height: 12),
+              // Category tabs
               Row(
-                children: ExerciseType.values.map((type) {
-                  final isSelected = settings.exerciseType == type;
+                children: MissionCategory.values.map((category) {
+                  final isSelected = _selectedCategory == category;
+                  final catName = category == MissionCategory.workout
+                      ? s.categoryWorkout
+                      : s.categoryStudy;
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
-                        right: type == ExerciseType.squat ? 8 : 0,
-                        left: type == ExerciseType.pushUp ? 8 : 0,
+                        right: category == MissionCategory.workout ? 6 : 0,
+                        left: category == MissionCategory.study ? 6 : 0,
                       ),
                       child: GestureDetector(
-                        onTap: () => alarmState.updateExerciseType(type),
+                        onTap: () =>
+                            setState(() => _selectedCategory = category),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF0F3460)
-                                : const Color(0xFF16213E),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? const Color(0xFF533483)
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
+                                ? AppColors.accent
+                                : AppColors.surface,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Column(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                type == ExerciseType.squat
-                                    ? Icons.accessibility_new
-                                    : Icons.fitness_center,
-                                color: isSelected
-                                    ? Colors.white
-                                    : Colors.grey[600],
-                                size: 32,
-                              ),
-                              const SizedBox(height: 8),
+                              Icon(category.icon,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.textSecondary,
+                                  size: 18),
+                              const SizedBox(width: 6),
                               Text(
-                                type.displayName,
+                                catName,
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.white
-                                      : Colors.grey[600],
+                                      : AppColors.textSecondary,
                                   fontSize: 14,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '10回',
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white60
-                                      : Colors.grey[700],
-                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -139,24 +292,159 @@ class HomeScreen extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              const Spacer(),
+              const SizedBox(height: 12),
+              // Mission list
+              Expanded(
+                child: ListView(
+                  children:
+                      MissionType.byCategory(_selectedCategory).map((mission) {
+                    final isSelected = settings.missionTypeId == mission.id;
+                    final isLocked = mission.isPremium && !isPremium;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (isLocked) {
+                            Navigator.pushNamed(context, '/paywall');
+                            return;
+                          }
+                          alarmState.updateMissionType(mission.id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.selected
+                                : AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.accent
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                mission.icon,
+                                color: isLocked
+                                    ? AppColors.textHint
+                                    : AppColors.accent,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 16),
+                              Text(
+                                s.missionName(mission.id),
+                                style: TextStyle(
+                                  color: isLocked
+                                      ? AppColors.textHint
+                                      : AppColors.textPrimary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (isLocked) ...[
+                                const SizedBox(width: 8),
+                                const Icon(Icons.lock,
+                                    color: AppColors.textHint, size: 14),
+                              ],
+                              if (mission.isPremium && isPremium) ...[
+                                const SizedBox(width: 8),
+                                const Icon(Icons.star,
+                                    color: AppColors.gold, size: 14),
+                              ],
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () =>
+                                    _showMissionInfo(context, mission, s),
+                                child: const Icon(Icons.info_outline,
+                                    color: AppColors.textHint, size: 18),
+                              ),
+                              const Spacer(),
+                              if (isSelected)
+                                const Icon(Icons.check_circle,
+                                    color: AppColors.accent),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Target count picker (only for rep-based missions)
+              if (selectedMission.detectionMode == DetectionMode.repBased)
+                GestureDetector(
+                  onTap: () => _showTargetPicker(
+                      context, alarmState, selectedMission, s),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              s.target,
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary, fontSize: 14),
+                            ),
+                            if (selectedMission.category ==
+                                MissionCategory.workout) ...[
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => _showExerciseModerationInfo(context, s),
+                                child: const Icon(Icons.info_outline,
+                                    color: AppColors.textHint, size: 18),
+                              ),
+                            ],
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              '${settings.targetCount}${selectedMission.detectionMode == DetectionMode.repBased ? s.unitReps : s.unitSeconds}',
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.chevron_right,
+                                color: AppColors.textHint, size: 20),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 12),
               // Oyasumi button
               SizedBox(
                 width: double.infinity,
-                height: 60,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, '/sleep');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF533483),
+                    backgroundColor: AppColors.accent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'おやすみ',
-                    style: TextStyle(
+                  child: Text(
+                    s.goodNight,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -164,12 +452,17 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
-                'アプリを閉じないでください',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                s.doNotCloseApp,
+                style: const TextStyle(color: AppColors.textHint, fontSize: 12),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 4),
+              Text(
+                s.alarmNotInBackground,
+                style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -177,14 +470,91 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _showTimePicker(BuildContext context, AlarmState alarmState) {
-    final settings = alarmState.settings;
-    int selectedHour = settings.alarmTime.hour;
-    int selectedMinute = settings.alarmTime.minute;
+  void _showExerciseModerationInfo(BuildContext context, dynamic s) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.info_outline, color: AppColors.accent, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              s.target,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          s.exerciseModeration,
+          style: const TextStyle(
+            color: Color(0xFF444444),
+            fontSize: 14,
+            height: 1.6,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: AppColors.accent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMissionInfo(BuildContext context, MissionType mission, dynamic s) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(mission.icon, color: AppColors.accent, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              s.missionName(mission.id),
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          s.missionInfo(mission.id),
+          style: const TextStyle(
+            color: Color(0xFF444444),
+            fontSize: 14,
+            height: 1.6,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: AppColors.accent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTargetPicker(BuildContext context, AlarmState alarmState,
+      MissionType mission, dynamic s) {
+    final min = mission.minTarget;
+    final max = mission.maxTarget;
+    final current = alarmState.settings.targetCount.clamp(min, max);
+    int selectedValue = current;
+    final unit = mission.detectionMode == DetectionMode.repBased
+        ? s.unitReps
+        : s.unitSeconds;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF16213E),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -201,19 +571,89 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('キャンセル',
-                          style: TextStyle(color: Colors.grey)),
+                      child: Text(s.cancel,
+                          style: const TextStyle(color: AppColors.textHint)),
+                    ),
+                    Text(
+                      '${s.target} ($unit)',
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 14),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        alarmState.updateTargetCount(selectedValue);
+                        Navigator.pop(context);
+                      },
+                      child: Text(s.done,
+                          style: const TextStyle(color: AppColors.accent)),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(
+                    initialItem: current - min,
+                  ),
+                  itemExtent: 40,
+                  onSelectedItemChanged: (index) {
+                    selectedValue = min + index;
+                  },
+                  children: List.generate(
+                    max - min + 1,
+                    (index) => Center(
+                      child: Text(
+                        '${min + index}',
+                        style: const TextStyle(
+                            color: AppColors.textPrimary, fontSize: 22),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showTimePicker(BuildContext context, AlarmState alarmState, dynamic s) {
+    final settings = alarmState.settings;
+    int selectedHour = settings.alarmTime.hour;
+    int selectedMinute = settings.alarmTime.minute;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(s.cancel,
+                          style: const TextStyle(color: AppColors.textHint)),
                     ),
                     TextButton(
                       onPressed: () {
                         alarmState.updateAlarmTime(
-                          TimeOfDay(
-                              hour: selectedHour, minute: selectedMinute),
+                          TimeOfDay(hour: selectedHour, minute: selectedMinute),
                         );
                         Navigator.pop(context);
                       },
-                      child: const Text('設定',
-                          style: TextStyle(color: Color(0xFF533483))),
+                      child: Text(s.done,
+                          style: const TextStyle(color: AppColors.accent)),
                     ),
                   ],
                 ),
@@ -239,6 +679,39 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _QuickTimeButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickTimeButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.accent,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

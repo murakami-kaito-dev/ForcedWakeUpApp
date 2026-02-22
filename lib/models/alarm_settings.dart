@@ -1,27 +1,50 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'exercise_type.dart';
+import 'mission_type.dart';
 
 class AlarmSettings {
   final TimeOfDay alarmTime;
-  final ExerciseType exerciseType;
+  final String missionTypeId;
   final bool isEnabled;
+  final int targetCount;
+  final String alarmSoundId;
+  final double alarmVolume;
+  final String? customSoundPath;
+  final String? customSoundName;
 
-  const AlarmSettings({
+  AlarmSettings({
     required this.alarmTime,
-    required this.exerciseType,
+    required this.missionTypeId,
     this.isEnabled = true,
-  });
+    int? targetCount,
+    this.alarmSoundId = 'fanfare',
+    this.alarmVolume = 1.0,
+    this.customSoundPath,
+    this.customSoundName,
+  }) : targetCount =
+            targetCount ?? MissionType.fromId(missionTypeId).defaultTarget;
+
+  MissionType get missionType => MissionType.fromId(missionTypeId);
 
   AlarmSettings copyWith({
     TimeOfDay? alarmTime,
-    ExerciseType? exerciseType,
+    String? missionTypeId,
     bool? isEnabled,
+    int? targetCount,
+    String? alarmSoundId,
+    double? alarmVolume,
+    String? customSoundPath,
+    String? customSoundName,
   }) {
     return AlarmSettings(
       alarmTime: alarmTime ?? this.alarmTime,
-      exerciseType: exerciseType ?? this.exerciseType,
+      missionTypeId: missionTypeId ?? this.missionTypeId,
       isEnabled: isEnabled ?? this.isEnabled,
+      targetCount: targetCount ?? this.targetCount,
+      alarmSoundId: alarmSoundId ?? this.alarmSoundId,
+      alarmVolume: alarmVolume ?? this.alarmVolume,
+      customSoundPath: customSoundPath ?? this.customSoundPath,
+      customSoundName: customSoundName ?? this.customSoundName,
     );
   }
 
@@ -29,16 +52,26 @@ class AlarmSettings {
     return {
       'hour': alarmTime.hour,
       'minute': alarmTime.minute,
-      'exerciseType': exerciseType.index,
+      'missionTypeId': missionTypeId,
       'isEnabled': isEnabled,
+      'targetCount': targetCount,
+      'alarmSoundId': alarmSoundId,
+      'alarmVolume': alarmVolume,
+      'customSoundPath': customSoundPath,
+      'customSoundName': customSoundName,
     };
   }
 
   factory AlarmSettings.fromJson(Map<String, dynamic> json) {
     return AlarmSettings(
       alarmTime: TimeOfDay(hour: json['hour'], minute: json['minute']),
-      exerciseType: ExerciseType.values[json['exerciseType']],
+      missionTypeId: (json['missionTypeId'] as String?) ?? 'squat',
       isEnabled: json['isEnabled'] ?? true,
+      targetCount: json['targetCount'],
+      alarmSoundId: (json['alarmSoundId'] as String?) ?? 'fanfare',
+      alarmVolume: (json['alarmVolume'] ?? 1.0).toDouble(),
+      customSoundPath: json['customSoundPath'] as String?,
+      customSoundName: json['customSoundName'] as String?,
     );
   }
 
@@ -48,8 +81,8 @@ class AlarmSettings {
     return AlarmSettings.fromJson(jsonDecode(jsonString));
   }
 
-  static AlarmSettings get defaultSettings => const AlarmSettings(
-        alarmTime: TimeOfDay(hour: 7, minute: 0),
-        exerciseType: ExerciseType.squat,
+  static AlarmSettings get defaultSettings => AlarmSettings(
+        alarmTime: const TimeOfDay(hour: 7, minute: 0),
+        missionTypeId: 'squat',
       );
 }

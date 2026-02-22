@@ -1,0 +1,5 @@
+CFBundleDisplayName = "ForcedWake Alarm";
+NSCameraUsageDescription = "Camera is used to detect exercise movements to dismiss the alarm";
+NSMicrophoneUsageDescription = "Microphone permission is required by the system when using the camera. No audio is recorded.";
+NSPhotoLibraryUsageDescription = "Used to select custom alarm sounds from your device";
+NSAppleMusicUsageDescription = "Music library songs are used as alarm sounds";

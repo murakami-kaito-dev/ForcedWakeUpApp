@@ -3,27 +3,92 @@ PODS:
     - Flutter
   - camera_avfoundation (0.0.1):
     - Flutter
+  - DKImagePickerController/Core (4.3.9):
+    - DKImagePickerController/ImageDataManager
+    - DKImagePickerController/Resource
+  - DKImagePickerController/ImageDataManager (4.3.9)
+  - DKImagePickerController/PhotoGallery (4.3.9):
+    - DKImagePickerController/Core
+    - DKPhotoGallery
+  - DKImagePickerController/Resource (4.3.9)
+  - DKPhotoGallery (0.0.19):
+    - DKPhotoGallery/Core (= 0.0.19)
+    - DKPhotoGallery/Model (= 0.0.19)
+    - DKPhotoGallery/Preview (= 0.0.19)
+    - DKPhotoGallery/Resource (= 0.0.19)
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Core (0.0.19):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Preview
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Model (0.0.19):
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Preview (0.0.19):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Resource
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Resource (0.0.19):
+    - SDWebImage
+    - SwiftyGif
+  - file_picker (0.0.1):
+    - DKImagePickerController/PhotoGallery
+    - Flutter
   - Flutter (1.0.0)
+  - flutter_native_splash (2.4.3):
+    - Flutter
   - google_mlkit_commons (0.8.1):
     - Flutter
     - MLKitVision
+  - google_mlkit_image_labeling (0.12.1):
+    - Flutter
+    - google_mlkit_commons
+    - GoogleMLKit/ImageLabeling (~> 6.0.0)
+    - GoogleMLKit/ImageLabelingCustom (~> 6.0.0)
+  - google_mlkit_object_detection (0.13.1):
+    - Flutter
+    - google_mlkit_commons
+    - GoogleMLKit/ObjectDetection (~> 6.0.0)
+    - GoogleMLKit/ObjectDetectionCustom (~> 6.0.0)
   - google_mlkit_pose_detection (0.12.1):
     - Flutter
     - google_mlkit_commons
     - GoogleMLKit/PoseDetection (~> 6.0.0)
     - GoogleMLKit/PoseDetectionAccurate (~> 6.0.0)
+  - google_mlkit_text_recognition (0.13.1):
+    - Flutter
+    - google_mlkit_commons
+    - GoogleMLKit/TextRecognition (~> 6.0.0)
   - GoogleDataTransport (9.4.1):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleMLKit/ImageLabeling (6.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitImageLabeling (~> 5.0.0)
+  - GoogleMLKit/ImageLabelingCustom (6.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitImageLabelingCustom (~> 5.0.0)
   - GoogleMLKit/MLKitCore (6.0.0):
     - MLKitCommon (~> 11.0.0)
+  - GoogleMLKit/ObjectDetection (6.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitObjectDetection (~> 5.0.0)
+  - GoogleMLKit/ObjectDetectionCustom (6.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitObjectDetectionCustom (~> 5.0.0)
   - GoogleMLKit/PoseDetection (6.0.0):
     - GoogleMLKit/MLKitCore
     - MLKitPoseDetection (~> 1.0.0-beta13)
   - GoogleMLKit/PoseDetectionAccurate (6.0.0):
     - GoogleMLKit/MLKitCore
     - MLKitPoseDetectionAccurate (~> 1.0.0-beta13)
+  - GoogleMLKit/TextRecognition (6.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTextRecognition (~> 4.0.0)
   - GoogleToolboxForMac/Defines (4.2.1)
   - GoogleToolboxForMac/Logger (4.2.1):
     - GoogleToolboxForMac/Defines (= 4.2.1)
@@ -42,6 +107,9 @@ PODS:
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (3.5.0)
+  - in_app_purchase_storekit (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - just_audio (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -53,6 +121,32 @@ PODS:
     - GoogleUtilities/UserDefaults (< 8.0, >= 7.13.0)
     - GoogleUtilitiesComponents (~> 1.0)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+  - MLKitImageLabeling (5.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitImageLabelingCommon (~> 7.0)
+    - MLKitVision (~> 7.0)
+    - MLKitVisionKit (~> 8.0)
+  - MLKitImageLabelingCommon (7.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitVision (~> 7.0)
+  - MLKitImageLabelingCustom (5.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitImageLabelingCommon (~> 7.0)
+    - MLKitVision (~> 7.0)
+    - MLKitVisionKit (~> 8.0)
+  - MLKitObjectDetection (5.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitObjectDetectionCommon (~> 7.0)
+    - MLKitVision (~> 7.0)
+    - MLKitVisionKit (~> 8.0)
+  - MLKitObjectDetectionCommon (7.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitVision (~> 7.0)
+  - MLKitObjectDetectionCustom (5.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitObjectDetectionCommon (~> 7.0)
+    - MLKitVision (~> 7.0)
+    - MLKitVisionKit (~> 8.0)
   - MLKitPoseDetection (1.0.0-beta13):
     - MLKitCommon (~> 11.0)
     - MLKitPoseDetectionCommon (= 1.0.0-beta13)
@@ -64,12 +158,24 @@ PODS:
   - MLKitPoseDetectionCommon (1.0.0-beta13):
     - MLKitCommon (~> 11.0)
     - MLKitXenoCommon (= 1.0.0-beta13)
+  - MLKitTextRecognition (4.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitTextRecognitionCommon (= 3.0.0)
+    - MLKitVision (~> 7.0)
+  - MLKitTextRecognitionCommon (3.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitVision (~> 7.0)
   - MLKitVision (7.0.0):
     - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
     - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
     - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
     - MLImage (= 1.0.0-beta5)
     - MLKitCommon (~> 11.0)
+  - MLKitVisionKit (8.0.0):
+    - MLKitCommon (~> 11.0)
+    - MLKitImageLabelingCommon (~> 7.0)
+    - MLKitObjectDetectionCommon (~> 7.0)
+    - MLKitVision (~> 7.0)
   - MLKitXenoCommon (1.0.0-beta13):
     - MLKitCommon (~> 11.0)
     - MLKitVision (~> 7.0)
@@ -84,9 +190,18 @@ PODS:
     - Flutter
     - FlutterMacOS
   - PromisesObjC (2.4.0)
+  - SDWebImage (5.21.1):
+    - SDWebImage/Core (= 5.21.1)
+  - SDWebImage/Core (5.21.1)
+  - share_plus (0.0.1):
+    - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
+  - SwiftyGif (5.4.5)
   - volume_controller (0.0.1):
     - Flutter
   - wakelock_plus (0.0.1):
@@ -95,18 +210,28 @@ PODS:
 DEPENDENCIES:
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
+  - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
+  - google_mlkit_image_labeling (from `.symlinks/plugins/google_mlkit_image_labeling/ios`)
+  - google_mlkit_object_detection (from `.symlinks/plugins/google_mlkit_object_detection/ios`)
   - google_mlkit_pose_detection (from `.symlinks/plugins/google_mlkit_pose_detection/ios`)
+  - google_mlkit_text_recognition (from `.symlinks/plugins/google_mlkit_text_recognition/ios`)
+  - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - just_audio (from `.symlinks/plugins/just_audio/darwin`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
 
 SPEC REPOS:
   trunk:
+    - DKImagePickerController
+    - DKPhotoGallery
     - GoogleDataTransport
     - GoogleMLKit
     - GoogleToolboxForMac
@@ -115,33 +240,60 @@ SPEC REPOS:
     - GTMSessionFetcher
     - MLImage
     - MLKitCommon
+    - MLKitImageLabeling
+    - MLKitImageLabelingCommon
+    - MLKitImageLabelingCustom
+    - MLKitObjectDetection
+    - MLKitObjectDetectionCommon
+    - MLKitObjectDetectionCustom
     - MLKitPoseDetection
     - MLKitPoseDetectionAccurate
     - MLKitPoseDetectionCommon
+    - MLKitTextRecognition
+    - MLKitTextRecognitionCommon
     - MLKitVision
+    - MLKitVisionKit
     - MLKitXenoCommon
     - nanopb
     - PromisesObjC
+    - SDWebImage
+    - SwiftyGif
 
 EXTERNAL SOURCES:
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
+  file_picker:
+    :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
+  flutter_native_splash:
+    :path: ".symlinks/plugins/flutter_native_splash/ios"
   google_mlkit_commons:
     :path: ".symlinks/plugins/google_mlkit_commons/ios"
+  google_mlkit_image_labeling:
+    :path: ".symlinks/plugins/google_mlkit_image_labeling/ios"
+  google_mlkit_object_detection:
+    :path: ".symlinks/plugins/google_mlkit_object_detection/ios"
   google_mlkit_pose_detection:
     :path: ".symlinks/plugins/google_mlkit_pose_detection/ios"
+  google_mlkit_text_recognition:
+    :path: ".symlinks/plugins/google_mlkit_text_recognition/ios"
+  in_app_purchase_storekit:
+    :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   just_audio:
     :path: ".symlinks/plugins/just_audio/darwin"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
   volume_controller:
     :path: ".symlinks/plugins/volume_controller/ios"
   wakelock_plus:
@@ -150,28 +302,49 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   audio_session: 19e9480dbdd4e5f6c4543826b2e8b0e4ab6145fe
   camera_avfoundation: adb0207d868b2d873e895371d88448399ab78d87
+  DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
+  DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
+  file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
   google_mlkit_commons: 242b715c38863e1ca5e732c909a1545ba52f1375
+  google_mlkit_image_labeling: a253b5c4426a99ecedc79199519135b8564e1929
+  google_mlkit_object_detection: 845d69b11087ff20cd2515524f404eb5ea7e2c4d
   google_mlkit_pose_detection: 38c7cbfc8ceec86ed9b6c7d589330e965ab5698d
+  google_mlkit_text_recognition: e36a265afba48580518dfc4532ce9fefaae7d20e
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  in_app_purchase_storekit: a1ce04056e23eecc666b086040239da7619cd783
   just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   MLImage: 1824212150da33ef225fbd3dc49f184cf611046c
   MLKitCommon: afec63980417d29ffbb4790529a1b0a2291699e1
+  MLKitImageLabeling: c13caec3baa684553ec823d5dfbca3e3be8ce9a2
+  MLKitImageLabelingCommon: fa802f14c3a321121409f6cbe1df89ba9cf1a00c
+  MLKitImageLabelingCustom: 57b8782ddda60b3027a796efcc0c6970f9e2b78f
+  MLKitObjectDetection: 9b40359730baceef23322c6d41070da7639ff100
+  MLKitObjectDetectionCommon: f3ca8581a0741be6ce609920367316571a280efa
+  MLKitObjectDetectionCustom: a412a63a743724ae124b07d6c3cc817283da3453
   MLKitPoseDetection: 508d062f66c695fddaf9c59ac94c855486a1b220
   MLKitPoseDetectionAccurate: d6fcf8949b52d73af1f67c4b72b2ddedff131f1d
   MLKitPoseDetectionCommon: 6063ec16a354c0c28b7b2f223196e8aeab1ec99c
+  MLKitTextRecognition: c83c18ad25496f2077f6ec93c5940487ff2eb343
+  MLKitTextRecognitionCommon: c0b3a63d529296a19bce1f8bc8a513644ed4d1f6
   MLKitVision: e858c5f125ecc288e4a31127928301eaba9ae0c1
+  MLKitVisionKit: 6d2ea9741b262ec0fed2a5a3de521cfa671c6e83
   MLKitXenoCommon: 39060e7a54769d97a877152c59a1898e7f8d9e35
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  SDWebImage: f29024626962457f3470184232766516dee8dfea
+  share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
   wakelock_plus: 76957ab028e12bfa4e66813c99e46637f367fc7e
 

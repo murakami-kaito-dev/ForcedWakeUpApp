@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
+import '../theme/app_colors.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -68,38 +70,93 @@ class _SleepScreenState extends State<SleepScreen> {
     });
   }
 
+  void _showCancelDialog() {
+    final s = context.read<LanguageState>().strings;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.darkSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          s.cancelAlarmTitle,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        content: Text(
+          s.cancelAlarmBody,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(s.cancel,
+                style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // close dialog
+              _timer?.cancel();
+              WakelockPlus.disable();
+              Navigator.pushReplacementNamed(this.context, '/');
+            },
+            child: Text(s.cancelAlarmConfirm,
+                style: const TextStyle(color: Color(0xFFE94560))),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _countdown,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.15),
-                    fontSize: 48,
-                    fontWeight: FontWeight.w200,
-                    letterSpacing: 4,
+    final s = context.watch<LanguageState>().strings;
+
+    return Scaffold(
+      backgroundColor: AppColors.darkBackground,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.nightlight_round,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 48,
                   ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  '充電しておやすみください',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.1),
-                    fontSize: 14,
+                  const SizedBox(height: 24),
+                  Text(
+                    _countdown,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 56,
+                      fontWeight: FontWeight.w200,
+                      letterSpacing: 4,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Text(
+                    s.chargeAndSleep,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back,
+                    color: Colors.white.withOpacity(0.5)),
+                onPressed: () => _showCancelDialog(),
+              ),
+            ),
+          ],
         ),
       ),
     );

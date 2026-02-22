@@ -1,11 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:volume_controller/volume_controller.dart';
 import 'package:provider/provider.dart';
+import '../models/mission_type.dart';
 import '../services/audio_service.dart';
+import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
+import '../state/language_state.dart';
+import '../state/premium_state.dart';
+import '../theme/app_colors.dart';
 
 class AlarmScreen extends StatefulWidget {
-  const AlarmScreen({super.key});
+  final StatisticsService statisticsService;
+
+  const AlarmScreen({super.key, required this.statisticsService});
 
   @override
   State<AlarmScreen> createState() => _AlarmScreenState();
@@ -15,6 +23,7 @@ class _AlarmScreenState extends State<AlarmScreen>
     with SingleTickerProviderStateMixin {
   final AudioService _audioService = AudioService();
   Timer? _autoStopTimer;
+  StreamSubscription<double>? _volumeSubscription;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -31,20 +40,36 @@ class _AlarmScreenState extends State<AlarmScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    _audioService.playAlarm();
+    final settings = context.read<AlarmState>().settings;
+    final isPremium = context.read<PremiumState>().isPremium;
+    final alarmVolume = isPremium ? settings.alarmVolume : 1.0;
+    _audioService.playAlarm(
+      soundId: settings.alarmSoundId,
+      volume: alarmVolume,
+      customSoundPath: settings.customSoundPath,
+    );
+
+    // Prevent volume changes during alarm
+    VolumeController().showSystemUI = false;
+    _volumeSubscription = VolumeController().listener((volume) {
+      if (volume < alarmVolume - 0.01) {
+        VolumeController().setVolume(alarmVolume);
+      }
+    });
 
     // 10 minute auto-stop
     _autoStopTimer = Timer(const Duration(minutes: 10), () {
       _audioService.stopAlarm();
       if (mounted) {
-        context.read<AlarmState>().resetAlarm();
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/failure');
       }
     });
   }
 
   @override
   void dispose() {
+    _volumeSubscription?.cancel();
+    _volumeSubscription = null;
     _autoStopTimer?.cancel();
     _pulseController.dispose();
     _audioService.dispose();
@@ -54,12 +79,24 @@ class _AlarmScreenState extends State<AlarmScreen>
   @override
   Widget build(BuildContext context) {
     final alarmState = context.watch<AlarmState>();
-    final exerciseName = alarmState.settings.exerciseType.displayName;
+    final s = context.watch<LanguageState>().strings;
+    final mission = alarmState.missionType;
+
+    String instructionText;
+    switch (mission.id) {
+      case 'reading':
+        instructionText = s.alarmInstructionReading(alarmState.targetCount);
+      case 'studying':
+        instructionText = s.alarmInstructionStudying(alarmState.targetCount);
+      default:
+        instructionText = s.alarmInstructionExercise(
+            s.missionName(mission.id), alarmState.targetCount);
+    }
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: AppColors.background,
         body: SafeArea(
           child: Center(
             child: Column(
@@ -74,20 +111,24 @@ class _AlarmScreenState extends State<AlarmScreen>
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  '起きる時間です！',
-                  style: TextStyle(
-                    color: Colors.white,
+                Text(
+                  s.wakeUpTime,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  '$exerciseNameを10回行ってアラームを解除',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    instructionText,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -96,18 +137,22 @@ class _AlarmScreenState extends State<AlarmScreen>
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
+                      _volumeSubscription?.cancel();
+                      _volumeSubscription = null;
                       Navigator.pushReplacementNamed(context, '/exercise');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF533483),
+                      backgroundColor: AppColors.accent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      '筋トレを始める',
-                      style: TextStyle(
-                        color: Colors.white,
+                    child: Text(
+                      mission.category == MissionCategory.workout
+                          ? s.startExercise
+                          : s.start,
+                      style: const TextStyle(
+                        color: AppColors.surface,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -116,14 +161,18 @@ class _AlarmScreenState extends State<AlarmScreen>
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  '明るい場所で行ってください',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  s.brightPlace,
+                  style:
+                      const TextStyle(color: AppColors.textHint, fontSize: 12),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'スマホスタンドの使用を推奨します',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                ),
+                if (mission.category == MissionCategory.workout) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    s.recommendStand,
+                    style: const TextStyle(
+                        color: AppColors.textHint, fontSize: 12),
+                  ),
+                ],
               ],
             ),
           ),

@@ -1,7 +1,7 @@
 name: forced_wakeup_app
-description: "朝型強制変換アラーム - 筋トレしないと止まらないアラームアプリ"
+description: "モーニングルーティン\n強制アラーム - 筋トレしないと止まらないアラームアプリ"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.5.3
@@ -18,11 +18,34 @@ dependencies:
   shared_preferences: ^2.3.3
   provider: ^6.1.2
   wakelock_plus: ^1.2.8
+  in_app_purchase: ^3.2.0
+  in_app_purchase_storekit: ^0.4.0
+  sqflite: ^2.3.3
+  path: ^1.9.0
+  share_plus: ^9.0.0
+  google_mlkit_image_labeling: ^0.12.1
+  google_mlkit_text_recognition: ^0.13.1
+  google_mlkit_object_detection: ^0.13.0
+  table_calendar: ^3.1.2
+  file_picker: ^8.0.0
+  path_provider: ^2.1.0
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#0D1117"
+  image: "assets/images/splash.png"
+  ios: true
 
 flutter:
   uses-material-design: true
