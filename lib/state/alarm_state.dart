@@ -63,7 +63,7 @@ class AlarmState extends ChangeNotifier {
   }
 
   Future<void> updateAlarmVolume(double volume) async {
-    _settings = _settings.copyWith(alarmVolume: volume.clamp(0.3, 1.0));
+    _settings = _settings.copyWith(alarmVolume: volume.clamp(0.0, 1.0));
     await _storageService.saveAlarmSettings(_settings);
     notifyListeners();
   }

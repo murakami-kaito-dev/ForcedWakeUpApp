@@ -14,7 +14,6 @@ import '../services/image_labeling_service.dart';
 import '../services/text_recognition_service.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../state/alarm_state.dart';
-import '../state/premium_state.dart';
 import '../utils/camera_helper.dart';
 import '../utils/exercise_detector.dart';
 import '../utils/study_detector.dart';
@@ -91,8 +90,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     }
 
     final settings = alarmState.settings;
-    final isPremium = context.read<PremiumState>().isPremium;
-    final alarmVolume = isPremium ? settings.alarmVolume : 1.0;
+    final alarmVolume = settings.alarmVolume;
     _audioService.playAlarm(
       soundId: settings.alarmSoundId,
       volume: alarmVolume,

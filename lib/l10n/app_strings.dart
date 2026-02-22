@@ -141,6 +141,11 @@ class AppStrings {
   String soundSet(String name) => _soundSetFn(name);
   final String Function(String) _soundSetFn;
   final String filePickFailed;
+  final String saveVolume;
+  final String volumeSaved;
+  final String zeroVolumeWarningTitle;
+  final String zeroVolumeWarningBody;
+  final String volumeZeroNotice;
 
   // Sound: volume info dialog
   final String volumeInfoTitle;
@@ -157,8 +162,10 @@ class AppStrings {
   String badgeUnlockCondition(int days) => _badgeUnlockConditionFn(days);
   final String Function(int) _badgeUnlockConditionFn;
   final String badgeEarnedTitle;
-  String badgeEarnedBody(String name) => _badgeEarnedBodyFn(name);
-  final String Function(String) _badgeEarnedBodyFn;
+  String badgeEarnedBody(int days) => _badgeEarnedBodyFn(days);
+  final String Function(int) _badgeEarnedBodyFn;
+  String badgeAnniversaryBody(int years) => _badgeAnniversaryBodyFn(years);
+  final String Function(int) _badgeAnniversaryBodyFn;
   String badgeShareText(String name, int streak) =>
       _badgeShareTextFn(name, streak);
   final String Function(String, int) _badgeShareTextFn;
@@ -260,6 +267,11 @@ class AppStrings {
     required this.selectFromDevice,
     required String Function(String) soundSetFn,
     required this.filePickFailed,
+    required this.saveVolume,
+    required this.volumeSaved,
+    required this.zeroVolumeWarningTitle,
+    required this.zeroVolumeWarningBody,
+    required this.volumeZeroNotice,
     required this.volumeInfoTitle,
     required this.freePlanLabel,
     required this.freePlanVolumeDesc,
@@ -270,13 +282,15 @@ class AppStrings {
     required this.badgesTitle,
     required String Function(int) badgeUnlockConditionFn,
     required this.badgeEarnedTitle,
-    required String Function(String) badgeEarnedBodyFn,
+    required String Function(int) badgeEarnedBodyFn,
+    required String Function(int) badgeAnniversaryBodyFn,
     required String Function(String, int) badgeShareTextFn,
     required String Function(String) unlockedAtFn,
     required this.selectLanguageTitle,
   })  : _badgeNames = badgeNames,
         _badgeUnlockConditionFn = badgeUnlockConditionFn,
         _badgeEarnedBodyFn = badgeEarnedBodyFn,
+        _badgeAnniversaryBodyFn = badgeAnniversaryBodyFn,
         _badgeShareTextFn = badgeShareTextFn,
         _unlockedAtFn = unlockedAtFn,
         _missionNames = missionNames,
@@ -375,7 +389,6 @@ class AppStrings {
     premiumFeatures: [
       '読書・勉強ミッション', // バーピー・読書・勉強ミッション // 新バージョンで表示変更する
       'アラーム音の選択',
-      '音量調整',
       '達成統計・連続記録',
       'SNSシェア機能',
     ],
@@ -411,6 +424,11 @@ class AppStrings {
     selectFromDevice: '端末から選択',
     soundSetFn: _jaSoundSet,
     filePickFailed: 'ファイルの選択に失敗しました',
+    saveVolume: 'この音量で保存',
+    volumeSaved: 'アラーム音量を保存しました',
+    zeroVolumeWarningTitle: '音量がゼロです',
+    zeroVolumeWarningBody: 'アラームの音が鳴りません。このまま保存しますか？',
+    volumeZeroNotice: '音量ゼロ：アラーム音が鳴りません',
     volumeInfoTitle: 'アラーム音量について',
     freePlanLabel: '無料プラン',
     freePlanVolumeDesc: 'アラームは常に最大音量で鳴ります。確実に起きるための仕様です。',
@@ -418,16 +436,42 @@ class AppStrings {
     premiumPlanVolumeDesc: 'お好みの音量に調整できます。設定した音量でアラームが鳴ります。',
     volumePreviewNote: '※ 試聴はデバイスの現在の音量で再生されます。',
     badgeNames: {
-      'sprout': '芽生え',
-      'startDash': 'スタートダッシュ',
-      'routine': 'ルーティン',
-      'master': 'マスター',
-      'legend': 'レジェンド',
+      'day1': 'はじめの一歩',
+      'day3': '芽生え',
+      'day7': 'スタートダッシュ',
+      'day14': 'ルーティン',
+      'day21': '習慣化',
+      'day28': '4週間達成',
+      'day30': '1ヶ月達成',
+      'day40': '加速',
+      'day50': 'マスター',
+      'day60': '情熱',
+      'day70': '鉄壁',
+      'day80': 'ロケット',
+      'day90': '3ヶ月達成',
+      'day100': 'レジェンド',
+      'day125': 'きらめき',
+      'day150': '栄光',
+      'day175': '閃光',
+      'day200': '200日の軌跡',
+      'day300': '城塞',
+      'day365': '1年達成',
+      'day400': 'グローバル',
+      'day500': '大地',
+      'day600': 'フレア',
+      'day700': '夜明け',
+      'day730': '2年達成',
+      'day800': 'サイクロン',
+      'day900': '火山',
+      'day1000': '無限',
+      'day1095': '3年達成',
+      'day1100': '輝き',
     },
     badgesTitle: '達成バッジ',
     badgeUnlockConditionFn: _jaBadgeUnlockCondition,
     badgeEarnedTitle: 'おめでとう！',
     badgeEarnedBodyFn: _jaBadgeEarnedBody,
+    badgeAnniversaryBodyFn: _jaBadgeAnniversaryBody,
     badgeShareTextFn: _jaBadgeShareText,
     unlockedAtFn: _jaUnlockedAt,
     selectLanguageTitle: '言語を選択 / Select Language',
@@ -515,7 +559,6 @@ class AppStrings {
     premiumFeatures: [
       'Reading & Study missions', // Burpees, Reading & Study missions // 新バージョンで表示変更する
       'Alarm sound selection',
-      'Volume control',
       'Achievement stats & streaks',
       'Social sharing',
     ],
@@ -551,6 +594,11 @@ class AppStrings {
     selectFromDevice: 'Select from Device',
     soundSetFn: _enSoundSet,
     filePickFailed: 'Failed to select file',
+    saveVolume: 'Save Volume',
+    volumeSaved: 'Alarm volume saved',
+    zeroVolumeWarningTitle: 'Volume is zero',
+    zeroVolumeWarningBody: 'The alarm will not make any sound. Save anyway?',
+    volumeZeroNotice: 'Volume is zero: alarm will be silent',
     volumeInfoTitle: 'About Alarm Volume',
     freePlanLabel: 'Free Plan',
     freePlanVolumeDesc:
@@ -560,16 +608,42 @@ class AppStrings {
         'Adjust the volume to your preference. The alarm plays at your set volume.',
     volumePreviewNote: '* Preview plays at your current device volume.',
     badgeNames: {
-      'sprout': 'Sprout',
-      'startDash': 'Start Dash',
-      'routine': 'Routine',
-      'master': 'Master',
-      'legend': 'Legend',
+      'day1': 'First Step',
+      'day3': 'Sprout',
+      'day7': 'Start Dash',
+      'day14': 'Routine',
+      'day21': 'Habit Formed',
+      'day28': '4 Weeks',
+      'day30': '1 Month',
+      'day40': 'Accelerate',
+      'day50': 'Master',
+      'day60': 'Passion',
+      'day70': 'Iron Wall',
+      'day80': 'Rocket',
+      'day90': '3 Months',
+      'day100': 'Legend',
+      'day125': 'Sparkle',
+      'day150': 'Glory',
+      'day175': 'Flash',
+      'day200': '200-Day Journey',
+      'day300': 'Fortress',
+      'day365': '1 Year',
+      'day400': 'Global',
+      'day500': 'Terrain',
+      'day600': 'Flare',
+      'day700': 'Daybreak',
+      'day730': '2 Years',
+      'day800': 'Cyclone',
+      'day900': 'Volcano',
+      'day1000': 'Infinity',
+      'day1095': '3 Years',
+      'day1100': 'Radiance',
     },
     badgesTitle: 'Achievement Badges',
     badgeUnlockConditionFn: _enBadgeUnlockCondition,
     badgeEarnedTitle: 'Congratulations!',
     badgeEarnedBodyFn: _enBadgeEarnedBody,
+    badgeAnniversaryBodyFn: _enBadgeAnniversaryBody,
     badgeShareTextFn: _enBadgeShareText,
     unlockedAtFn: _enUnlockedAt,
     selectLanguageTitle: '言語を選択 / Select Language',
@@ -590,7 +664,8 @@ class AppStrings {
   static String _jaTimes(int n) => '$n回';
   static String _jaSoundSet(String name) => '$name を設定しました';
   static String _jaBadgeUnlockCondition(int days) => '$days日連続で解放';
-  static String _jaBadgeEarnedBody(String name) => '「$name」バッジを獲得しました！';
+  static String _jaBadgeEarnedBody(int days) => '$days日連続達成しました！';
+  static String _jaBadgeAnniversaryBody(int years) => '$years年達成しました！';
   static String _jaBadgeShareText(String name, int streak) =>
       'モーニングルーティン強制アラームで「$name」バッジを獲得！$streak日連続起床達成！';
   static String _jaUnlockedAt(String date) => '$date 獲得';
@@ -613,8 +688,10 @@ class AppStrings {
   static String _enSoundSet(String name) => '$name has been set';
   static String _enBadgeUnlockCondition(int days) =>
       'Unlocks at $days-day streak';
-  static String _enBadgeEarnedBody(String name) =>
-      'You earned the "$name" badge!';
+  static String _enBadgeEarnedBody(int days) =>
+      'You achieved a $days-day streak!';
+  static String _enBadgeAnniversaryBody(int years) =>
+      'You achieved $years year${years > 1 ? 's' : ''}!';
   static String _enBadgeShareText(String name, int streak) =>
       'I earned the "$name" badge on ForcedWake Alarm! $streak-day streak!';
   static String _enUnlockedAt(String date) => 'Earned $date';

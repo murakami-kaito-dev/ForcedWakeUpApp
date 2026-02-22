@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../models/alarm_sound.dart';
+import '../l10n/app_strings.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
@@ -24,8 +25,8 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
     with WidgetsBindingObserver {
   final AudioPlayer _previewPlayer = AudioPlayer();
   String? _playingId;
-  double _deviceVolume = 1.0;
-  StreamSubscription<double>? _volumeSubscription;
+  double _sliderVolume = 0.5;
+  double _savedVolume = 0.5;
   bool _isPickingFile = false;
 
   @override
@@ -38,22 +39,11 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
   Future<void> _initVolumeListener() async {
     try {
       VolumeController().showSystemUI = true;
-      final vol = await VolumeController().getVolume();
+      final saved = context.read<AlarmState>().settings.alarmVolume;
       if (mounted) {
-        setState(() => _deviceVolume = vol.clamp(0.0, 1.0));
-      }
-
-      if (!mounted) return;
-      final isPremium = context.read<PremiumState>().isPremium;
-      if (isPremium) {
-        // Premium: sync slider with device volume buttons
-        _volumeSubscription = VolumeController().listener((volume) {
-          if (mounted) {
-            setState(() => _deviceVolume = volume.clamp(0.0, 1.0));
-            context
-                .read<AlarmState>()
-                .updateAlarmVolume(volume.clamp(0.3, 1.0));
-          }
+        setState(() {
+          _sliderVolume = saved.clamp(0.0, 1.0);
+          _savedVolume = saved.clamp(0.0, 1.0);
         });
       }
     } catch (_) {}
@@ -77,7 +67,6 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _volumeSubscription?.cancel();
     _previewPlayer.dispose();
     super.dispose();
   }
@@ -89,7 +78,9 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
 
   Future<void> _startPreview(String id) async {
     setState(() => _playingId = id);
-    await _previewPlayer.setVolume(_deviceVolume);
+    // Set device volume to match slider for preview
+    VolumeController().setVolume(_sliderVolume.clamp(0.0, 1.0));
+    await _previewPlayer.setVolume(1.0);
     await _previewPlayer.setLoopMode(LoopMode.one);
     await _previewPlayer.seek(Duration.zero);
     unawaited(_previewPlayer.play());
@@ -188,10 +179,68 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
   }
 
   void _onVolumeChanged(double value) {
-    setState(() => _deviceVolume = value);
-    VolumeController().setVolume(value);
-    context.read<AlarmState>().updateAlarmVolume(value.clamp(0.3, 1.0));
+    setState(() => _sliderVolume = value);
+    // Update device volume only while previewing
+    if (_playingId != null) {
+      VolumeController().setVolume(value.clamp(0.0, 1.0));
+    }
   }
+
+  void _saveVolume() {
+    final s = context.read<LanguageState>().strings;
+    if (_sliderVolume < 0.01) {
+      _showZeroVolumeWarning();
+      return;
+    }
+    _doSaveVolume(s);
+  }
+
+  void _doSaveVolume(AppStrings s) {
+    context.read<AlarmState>().updateAlarmVolume(_sliderVolume.clamp(0.0, 1.0));
+    setState(() => _savedVolume = _sliderVolume);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(s.volumeSaved)),
+    );
+  }
+
+  void _showZeroVolumeWarning() {
+    final s = context.read<LanguageState>().strings;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          s.zeroVolumeWarningTitle,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 18),
+        ),
+        content: Text(
+          s.zeroVolumeWarningBody,
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(s.cancel,
+                style: const TextStyle(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _doSaveVolume(s);
+            },
+            child: Text(s.saveVolume,
+                style: const TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get _hasVolumeChanged =>
+      (_sliderVolume - _savedVolume).abs() > 0.001;
 
   void _showVolumeInfo() {
     final s = context.read<LanguageState>().strings;
@@ -301,76 +350,68 @@ class _SoundSelectionScreenState extends State<SoundSelectionScreen>
                       child: const Icon(Icons.info_outline,
                           color: AppColors.textHint, size: 18),
                     ),
-                    if (!isPremium) ...[
+                    if (_savedVolume < 0.01) ...[
                       const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'Premium',
-                          style: TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
+                      Flexible(
+                        child: Text(
+                          s.volumeZeroNotice,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ],
                 ),
                 const SizedBox(height: 8),
-                if (isPremium) ...[
-                  Slider(
-                    value: _deviceVolume.clamp(0.0, 1.0),
-                    min: 0.0,
-                    max: 1.0,
-                    activeColor: AppColors.accent,
-                    inactiveColor: AppColors.textHint,
-                    onChanged: _onVolumeChanged,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(s.volumeMin,
-                          style:
-                              const TextStyle(color: AppColors.textSecondary)),
-                      Text(s.volumeMax,
-                          style:
-                              const TextStyle(color: AppColors.textSecondary)),
-                    ],
-                  ),
-                ] else ...[
-                  // Free plan: show max volume indicator
-                  const Slider(
-                    value: 1.0,
-                    min: 0.0,
-                    max: 1.0,
-                    activeColor: AppColors.textHint,
-                    inactiveColor: AppColors.textHint,
-                    onChanged: null,
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                          color: AppColors.textHint, fontSize: 12),
-                      children: [
-                        TextSpan(text: s.alarmAtMaxVolumePrefix),
-                        TextSpan(
-                          text: s.alarmAtMaxVolumeHighlight,
-                          style: const TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(text: s.alarmAtMaxVolumeSuffix),
-                      ],
+                Slider(
+                  value: _sliderVolume.clamp(0.0, 1.0),
+                  min: 0.0,
+                  max: 1.0,
+                  activeColor: AppColors.accent,
+                  inactiveColor: AppColors.textHint,
+                  onChanged: _onVolumeChanged,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(s.volumeMin,
+                        style:
+                            const TextStyle(color: AppColors.textSecondary)),
+                    Text(s.volumeMax,
+                        style:
+                            const TextStyle(color: AppColors.textSecondary)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _hasVolumeChanged ? _saveVolume : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accent,
+                      disabledBackgroundColor:
+                          AppColors.accent.withOpacity(0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text(
+                      s.saveVolume,
+                      style: TextStyle(
+                        color: _hasVolumeChanged
+                            ? AppColors.surface
+                            : AppColors.surface.withOpacity(0.5),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),
