@@ -1,27 +1,42 @@
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart'
     hide DetectionMode;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class StudyDetector {
   final String missionId;
 
   // Reading: detect book-like objects via image labeling
   static const _bookLabels = [
-    'book',
-    'publication',
     'paper',
-    'document',
-    'text',
-    'page',
-    'notebook',
+    // 'book',
+    // 'publication',
+    // 'document',
+    // 'text',
+    // 'page',
+    // 'notebook',
+  ];
+
+  // Reading: minimum number of recognized characters to count as "text present"
+  static const _minTextLength = 20;
+
+  // Studying: detect pen/writing tool via image labeling
+  static const _studyLabels = [
+    'pen',
+    'pencil',
+    'writing',
+    'stationery',
+    'office supplies',
   ];
 
   StudyDetector({required this.missionId});
 
-  /// Reading: check image labels for book-related items
-  bool isBookDetected(List<ImageLabel> labels) {
+  /// Reading: check image labels for book-related items AND text presence
+  bool isBookDetected(List<ImageLabel> labels, RecognizedText recognizedText) {
     final labelNames = labels.map((l) => l.label.toLowerCase()).toList();
-    return _hasAnyMatch(labelNames, _bookLabels);
+    final hasPaper = _hasAnyMatch(labelNames, _bookLabels);
+    final hasText = recognizedText.text.trim().length >= _minTextLength;
+    return hasPaper && hasText;
   }
 
   /// Studying: check if any detected object has an elongated shape
@@ -30,13 +45,7 @@ class StudyDetector {
       List<DetectedObject> objects, List<ImageLabel> labels) {
     // First check: if image labeling detects pen/writing directly, trust it
     final labelNames = labels.map((l) => l.label.toLowerCase()).toList();
-    if (_hasAnyMatch(labelNames, [
-      'pen',
-      'pencil',
-      'writing',
-      'stationery',
-      'office supplies',
-    ])) {
+    if (_hasAnyMatch(labelNames, _studyLabels)) {
       return true;
     }
 
@@ -61,10 +70,16 @@ class StudyDetector {
     return false;
   }
 
+  /// Returns true if any of [labelNames] exactly matches any of [targets].
+  /// Used to check ML Kit labels against predefined target labels.
   bool _hasAnyMatch(List<String> labelNames, List<String> targets) {
     for (final name in labelNames) {
       for (final target in targets) {
-        if (name.contains(target)) return true;
+        // Partioal Match
+        // if (name.contains(target)) return true;
+
+        // Exact Match
+        if (name == target) return true;
       }
     }
     return false;

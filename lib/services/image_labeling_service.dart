@@ -2,7 +2,7 @@ import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 
 class ImageLabelingService {
   final ImageLabeler _labeler = ImageLabeler(
-    options: ImageLabelerOptions(confidenceThreshold: 0.25),
+    options: ImageLabelerOptions(confidenceThreshold: 0.4),
   );
 
   Future<List<ImageLabel>> processImage(InputImage inputImage) async {

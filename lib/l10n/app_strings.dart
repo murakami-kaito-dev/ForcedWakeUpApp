@@ -373,7 +373,7 @@ class AppStrings {
     tryAgainTomorrow: 'また明日チャレンジしましょう！',
     unlockAll: '全ての機能をアンロック',
     premiumFeatures: [
-      'バーピー・読書・勉強ミッション',
+      '読書・勉強ミッション', // バーピー・読書・勉強ミッション // 新バージョンで表示変更する
       'アラーム音の選択',
       '音量調整',
       '達成統計・連続記録',
@@ -513,7 +513,7 @@ class AppStrings {
     tryAgainTomorrow: 'Try again tomorrow!',
     unlockAll: 'Unlock all features',
     premiumFeatures: [
-      'Burpees, Reading & Study missions',
+      'Reading & Study missions', // Burpees, Reading & Study missions // 新バージョンで表示変更する
       'Alarm sound selection',
       'Volume control',
       'Achievement stats & streaks',

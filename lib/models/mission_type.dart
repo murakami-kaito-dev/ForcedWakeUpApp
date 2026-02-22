@@ -56,7 +56,7 @@ sealed class MissionType {
   static const List<MissionType> all = [
     SquatMission(),
     PushUpMission(),
-    BurpeeMission(),
+    // BurpeeMission(), // TODO: v1.0では非表示（検知精度改善後に再表示）
     ReadingMission(),
     StudyingMission(),
   ];

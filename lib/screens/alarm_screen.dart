@@ -69,6 +69,7 @@ class _AlarmScreenState extends State<AlarmScreen>
   @override
   void dispose() {
     _volumeSubscription?.cancel();
+    _volumeSubscription = null;
     _autoStopTimer?.cancel();
     _pulseController.dispose();
     _audioService.dispose();
@@ -136,6 +137,8 @@ class _AlarmScreenState extends State<AlarmScreen>
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
+                      _volumeSubscription?.cancel();
+                      _volumeSubscription = null;
                       Navigator.pushReplacementNamed(context, '/exercise');
                     },
                     style: ElevatedButton.styleFrom(

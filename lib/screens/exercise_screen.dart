@@ -11,6 +11,8 @@ import '../services/audio_service.dart';
 import '../services/pose_detection_service.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import '../services/image_labeling_service.dart';
+import '../services/text_recognition_service.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../state/alarm_state.dart';
 import '../state/premium_state.dart';
 import '../utils/camera_helper.dart';
@@ -32,6 +34,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   CameraDescription? _camera;
   PoseDetectionService? _poseService;
   ImageLabelingService? _labelingService;
+  TextRecognitionService? _textRecognitionService;
   mlkit_od.ObjectDetector? _objectDetector;
   final AudioService _audioService = AudioService();
   StreamSubscription<double>? _volumeSubscription;
@@ -72,6 +75,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     } else {
       _labelingService = ImageLabelingService();
       _studyDetector = StudyDetector(missionId: _mission.id);
+      if (_mission.id == 'reading') {
+        _textRecognitionService = TextRecognitionService();
+      }
       if (_mission.id == 'studying') {
         _objectDetector = mlkit_od.ObjectDetector(
           options: mlkit_od.ObjectDetectorOptions(
@@ -110,6 +116,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         DateTime.now().add(const Duration(minutes: _autoStopMinutes));
     _autoStopTimer = Timer(const Duration(minutes: _autoStopMinutes), () {
       _audioService.stopAlarm();
+      _volumeSubscription?.cancel();
+      _volumeSubscription = null;
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/failure');
       }
@@ -138,6 +146,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
         if (_detectedSeconds >= alarmState.targetCount) {
           _audioService.stopAlarm();
+          _volumeSubscription?.cancel();
+          _volumeSubscription = null;
           final ctrl = _cameraController;
           _cameraController = null;
           _isCameraReady = false;
@@ -214,6 +224,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
         if (reps >= alarmState.targetCount) {
           _audioService.stopAlarm();
+          _volumeSubscription?.cancel();
+          _volumeSubscription = null;
           final ctrl = _cameraController;
           _cameraController = null;
           _isCameraReady = false;
@@ -250,15 +262,34 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       }).catchError((_) {
         _isProcessing = false;
       });
+    } else if (_mission.id == 'reading' && _textRecognitionService != null) {
+      // Reading: use image labeling + text recognition
+      Future.wait([
+        _labelingService!.processImage(inputImage),
+        _textRecognitionService!.processImage(inputImage),
+      ]).then((results) {
+        if (!mounted) {
+          _isProcessing = false;
+          return;
+        }
+        final labels = results[0] as List<ImageLabel>;
+        final recognizedText =
+            results[1] as RecognizedText;
+        final detected =
+            _studyDetector!.isBookDetected(labels, recognizedText);
+        setState(() => _isCurrentlyDetected = detected);
+        _isProcessing = false;
+      }).catchError((_) {
+        _isProcessing = false;
+      });
     } else {
-      // Reading: use image labeling to find books
+      // Fallback: use image labeling only
       _labelingService!.processImage(inputImage).then((labels) {
         if (!mounted) {
           _isProcessing = false;
           return;
         }
-        final detected = _studyDetector!.isBookDetected(labels);
-        setState(() => _isCurrentlyDetected = detected);
+        setState(() => _isCurrentlyDetected = false);
         _isProcessing = false;
       }).catchError((_) {
         _isProcessing = false;
@@ -299,6 +330,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   void dispose() {
     _isCameraReady = false;
     _volumeSubscription?.cancel();
+    _volumeSubscription = null;
     _autoStopTimer?.cancel();
     _autoStopDisplayTimer?.cancel();
     _durationTimer?.cancel();
@@ -307,6 +339,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     _cameraController = null;
     _poseService?.dispose();
     _labelingService?.dispose();
+    _textRecognitionService?.dispose();
     _objectDetector?.close();
     _audioService.dispose();
     super.dispose();
@@ -341,6 +374,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             onPressed: () {
               Navigator.pop(dialogContext);
               _audioService.stopAlarm();
+              _volumeSubscription?.cancel();
+              _volumeSubscription = null;
               final ctrl = _cameraController;
               _cameraController = null;
               _isCameraReady = false;
@@ -382,6 +417,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             onPressed: () {
               Navigator.pop(dialogContext);
               _audioService.stopAlarm();
+              _volumeSubscription?.cancel();
+              _volumeSubscription = null;
               final ctrl = _cameraController;
               _cameraController = null;
               _isCameraReady = false;
