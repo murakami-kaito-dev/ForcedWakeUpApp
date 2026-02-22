@@ -7,7 +7,6 @@ import '../services/audio_service.dart';
 import '../services/statistics_service.dart';
 import '../state/alarm_state.dart';
 import '../state/language_state.dart';
-import '../state/premium_state.dart';
 import '../theme/app_colors.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -23,7 +22,6 @@ class _AlarmScreenState extends State<AlarmScreen>
     with SingleTickerProviderStateMixin {
   final AudioService _audioService = AudioService();
   Timer? _autoStopTimer;
-  StreamSubscription<double>? _volumeSubscription;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -41,21 +39,16 @@ class _AlarmScreenState extends State<AlarmScreen>
     );
 
     final settings = context.read<AlarmState>().settings;
-    final isPremium = context.read<PremiumState>().isPremium;
-    final alarmVolume = isPremium ? settings.alarmVolume : 1.0;
+    final alarmVolume = settings.alarmVolume;
     _audioService.playAlarm(
       soundId: settings.alarmSoundId,
       volume: alarmVolume,
       customSoundPath: settings.customSoundPath,
     );
 
-    // Prevent volume changes during alarm
-    VolumeController().showSystemUI = false;
-    _volumeSubscription = VolumeController().listener((volume) {
-      if (volume < alarmVolume - 0.01) {
-        VolumeController().setVolume(alarmVolume);
-      }
-    });
+    // Set device volume to saved alarm volume
+    VolumeController().showSystemUI = true;
+    VolumeController().setVolume(alarmVolume);
 
     // 10 minute auto-stop
     _autoStopTimer = Timer(const Duration(minutes: 10), () {
@@ -68,8 +61,6 @@ class _AlarmScreenState extends State<AlarmScreen>
 
   @override
   void dispose() {
-    _volumeSubscription?.cancel();
-    _volumeSubscription = null;
     _autoStopTimer?.cancel();
     _pulseController.dispose();
     _audioService.dispose();
@@ -137,8 +128,6 @@ class _AlarmScreenState extends State<AlarmScreen>
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      _volumeSubscription?.cancel();
-                      _volumeSubscription = null;
                       Navigator.pushReplacementNamed(context, '/exercise');
                     },
                     style: ElevatedButton.styleFrom(

@@ -17,9 +17,16 @@ class BadgeEarnedDialog extends StatelessWidget {
     required this.strings,
   });
 
+  static const _anniversaryDays = {365: 1, 730: 2, 1095: 3};
+
   @override
   Widget build(BuildContext context) {
     final name = strings.badgeName(badge.name);
+    final days = badge.requiredStreak;
+    final anniversaryYears = _anniversaryDays[days];
+    final bodyText = anniversaryYears != null
+        ? strings.badgeAnniversaryBody(anniversaryYears)
+        : strings.badgeEarnedBody(days);
 
     return Dialog(
       backgroundColor: AppColors.surface,
@@ -50,7 +57,7 @@ class BadgeEarnedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              strings.badgeEarnedBody(name),
+              bodyText,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.textSecondary,

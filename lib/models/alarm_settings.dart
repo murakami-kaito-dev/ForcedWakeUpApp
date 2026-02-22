@@ -18,7 +18,7 @@ class AlarmSettings {
     this.isEnabled = true,
     int? targetCount,
     this.alarmSoundId = 'fanfare',
-    this.alarmVolume = 1.0,
+    this.alarmVolume = 0.5,
     this.customSoundPath,
     this.customSoundName,
   }) : targetCount =
@@ -69,7 +69,7 @@ class AlarmSettings {
       isEnabled: json['isEnabled'] ?? true,
       targetCount: json['targetCount'],
       alarmSoundId: (json['alarmSoundId'] as String?) ?? 'fanfare',
-      alarmVolume: (json['alarmVolume'] ?? 1.0).toDouble(),
+      alarmVolume: (json['alarmVolume'] ?? 0.5).toDouble(),
       customSoundPath: json['customSoundPath'] as String?,
       customSoundName: json['customSoundName'] as String?,
     );
