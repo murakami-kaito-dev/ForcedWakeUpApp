@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../state/language_state.dart';
 import '../state/premium_state.dart';
 import '../theme/app_colors.dart';
@@ -163,8 +164,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 },
                 child: Text(
                   s.restorePurchase,
-                  style:
-                      const TextStyle(color: AppColors.textHint, fontSize: 14),
+                  style: const TextStyle(
+                      color: AppColors.textSecondary, fontSize: 14),
                 ),
               ),
               if (Platform.isIOS)
@@ -179,9 +180,54 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   child: Text(
                     s.redeemOfferCode,
                     style: const TextStyle(
-                        color: AppColors.textHint, fontSize: 14),
+                        color: AppColors.textSecondary, fontSize: 14),
                   ),
                 ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => launchUrl(Uri.parse(s.termsUrl),
+                        mode: LaunchMode.externalApplication),
+                    child: Text(
+                      s.termsOfUse,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text('|',
+                        style: TextStyle(
+                            color: AppColors.textHint, fontSize: 12)),
+                  ),
+                  GestureDetector(
+                    onTap: () => launchUrl(Uri.parse(s.privacyUrl),
+                        mode: LaunchMode.externalApplication),
+                    child: Text(
+                      s.privacyPolicy,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                s.agreeOnPurchase,
+                style: const TextStyle(
+                    color: AppColors.textHint, fontSize: 10),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
             ],
           ),
