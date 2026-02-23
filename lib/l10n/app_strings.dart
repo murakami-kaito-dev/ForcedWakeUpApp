@@ -113,6 +113,11 @@ class AppStrings {
   final String redeemOfferCode;
   String purchaseFailed(String e) => _purchaseFailedFn(e);
   final String Function(String) _purchaseFailedFn;
+  final String termsOfUse;
+  final String termsUrl;
+  final String privacyPolicy;
+  final String privacyUrl;
+  final String agreeOnPurchase;
 
   // --- Statistics screen ---
   final String statistics;
@@ -246,6 +251,11 @@ class AppStrings {
     required this.restorePurchase,
     required this.redeemOfferCode,
     required String Function(String) purchaseFailedFn,
+    required this.termsOfUse,
+    required this.termsUrl,
+    required this.privacyPolicy,
+    required this.privacyUrl,
+    required this.agreeOnPurchase,
     required this.statistics,
     required this.currentStreak,
     required this.bestStreak,
@@ -403,6 +413,11 @@ class AppStrings {
     restorePurchase: '購入を復元',
     redeemOfferCode: 'プロモーションコードを入力',
     purchaseFailedFn: _jaPurchaseFailed,
+    termsOfUse: '利用規約',
+    termsUrl: 'https://murakami-kaito-dev.github.io/ForcedWake-Alarm-Support/ja/terms.html',
+    privacyPolicy: 'プライバシーポリシー',
+    privacyUrl: 'https://murakami-kaito-dev.github.io/ForcedWake-Alarm-Support/ja/privacy.html',
+    agreeOnPurchase: '購入により利用規約・プライバシーポリシーに同意したものとみなされます',
     statistics: '統計',
     currentStreak: '連続記録',
     bestStreak: '最長記録',
@@ -573,6 +588,11 @@ class AppStrings {
     restorePurchase: 'Restore Purchase',
     redeemOfferCode: 'Redeem Offer Code',
     purchaseFailedFn: _enPurchaseFailed,
+    termsOfUse: 'Terms of Use',
+    termsUrl: 'https://murakami-kaito-dev.github.io/ForcedWake-Alarm-Support/en/terms.html',
+    privacyPolicy: 'Privacy Policy',
+    privacyUrl: 'https://murakami-kaito-dev.github.io/ForcedWake-Alarm-Support/en/privacy.html',
+    agreeOnPurchase: 'By purchasing, you agree to the Terms of Use and Privacy Policy',
     statistics: 'Statistics',
     currentStreak: 'Current Streak',
     bestStreak: 'Best Streak',
